@@ -1,0 +1,25 @@
+Mini mundo de projeto:
+----------------------
+O projeto Banco digital tem como objetivo criar e gerir contas correntes digitais de seus clientes.
+Para isso ele quer disponibilizar para seus clientes um aplicativo de celular que terá o frontend
+(user interface) criada por uma empresa tercerizada mas que cabe a você a criar o backend (Lógica de negócio)
+deste sistema de contas bancárias.
+Cada cliente pode ter uma ou mais contas digitais dentro de um limite de até 3 contas digitais.
+O banco só trabalha com pessoas fisícas. Para requisitar uma conta digital o cliente deverá préviamente realizar
+um cadastro no aplicativo informando obrigatoriamente seu nome, CPF e sua data de nascimento.
+Sendo o nome limitado a 120 caracteres, o CPF deve ser validado se está em conformidade com o praticado na legislação
+brasileira e data de nascimento se é um valor válido. O banco não trabalha com clientes menores de 18 anos e não permite
+que dois ou mais clientes sejam cadastrados com o mesmo CPF. Quando um cliente requisitar uma nova conta digital o
+sistema deverá gera-la automaticamente definindo um número positivo único para essa conta. O cliente pode cancelar a
+qualquer momento uma conta digital se não houver saldo para ela reintegrando o limite das 3 contas digitais.
+O banco define dois tipos de clientes: Normais e VIPs. O cliente VIP é aquele que nasceu nos meses de Janeiro,
+Março, Abril ou Novembro. O banco fornece uma funcionalidade pagamentos por QRCode no seu aplicativo que permite
+utilizar o saldo da conta do cliente automaticamente para isso o sistema irá receber os valores de débito já decodificados
+do QRCode. Nenhuma conta digital pode ficar com saldo negativo com exceção das contas digitais dos clientes VIPs que
+tem um limite de R$1000 cada uma. O aplicativo da banco digital permite receber depósitos (cash-in) em conta através de
+pagamentos de boletos em qualquer estabelecimento sendo sempre disponibilizado o saldo em conta quando liquidado.
+Para isso uma empresa parceira que monitora os pagamentos dos boletos deverá notificar sistêmicamente o sistema do
+banco do ocorrido informando o cpf do cliente, o número da conta e o valor do depósito.
+Qualquer cliente poderá listar suas contas digitais com seus respectivos saldos considerando seus limites de forma
+separada do saldo normal. Além disso os clientes poderão consultar o extrato de movimentação das suas contas digitais.
+-- ---------------------------------------------------------------------------------------------------------------------

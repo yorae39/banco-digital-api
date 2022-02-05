@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.DateSerializer
 import org.hibernate.validator.constraints.Length
 import java.time.LocalDate
 import javax.persistence.Column
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
@@ -29,4 +30,8 @@ data class Holder(
    @OneToMany(mappedBy = "holder", fetch = FetchType.EAGER)
    @JsonIgnore
    val accounts: List<Account>,
-)
+   val active: Boolean,
+   @Embedded
+   val address: Address,
+   val info: String
+   )
