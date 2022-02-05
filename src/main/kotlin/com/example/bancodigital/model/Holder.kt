@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity
 data class Holder(
@@ -20,6 +21,7 @@ data class Holder(
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    val id: Long,
    @Length(min=2, max=120)
+   @NotNull
    val name: String,
    @Length(min=11, max=11)
    @Column(unique=true, nullable = false)
@@ -27,11 +29,11 @@ data class Holder(
    @Column(nullable = false)
    @JsonSerialize(using = DateSerializer::class)
    val birthDate: LocalDate,
-   @OneToMany(mappedBy = "holder", fetch = FetchType.EAGER)
-   @JsonIgnore
-   val accounts: List<Account>,
    val active: Boolean,
    @Embedded
    val address: Address,
-   val info: String
+   val info: String,
+   @OneToMany(mappedBy = "holder", fetch = FetchType.EAGER)
+   @JsonIgnore
+   val accounts: List<Account>,
    )

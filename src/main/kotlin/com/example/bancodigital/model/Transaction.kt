@@ -1,5 +1,7 @@
 package com.example.bancodigital.model
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.ser.std.DateSerializer
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.Entity
@@ -21,12 +23,12 @@ data class Transaction(
     @NotNull
     val description: String,
     val observation: String,
-    @ManyToOne
-    val account: Account,
     val value: BigDecimal,
-    @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = DateSerializer::class)
     val dateTransaction: LocalDate,
     @NotNull
     @Enumerated(EnumType.STRING)
-    val transaction: TransactionType
+    val transactionType: TransactionType,
+    @ManyToOne
+    val account: Account,
 )

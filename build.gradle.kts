@@ -6,7 +6,6 @@ plugins {
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.spring") version "1.6.10"
     kotlin("plugin.jpa") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
 }
 
 group = "com.example"
@@ -40,7 +39,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
     implementation("org.springframework.boot:spring-boot-devtools:2.6.3")
     // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-    implementation("org.flywaydb:flyway-core:8.4.4")
+    implementation("org.flywaydb:flyway-core:7.1.1")
+    // https://mvnrepository.com/artifact/org.flywaydb/flyway-maven-plugin
+    implementation("org.flywaydb:flyway-maven-plugin:7.1.1")
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
     //VERIRIFICAR SE VAI DAR ERRO ENTÃO MIGRAR PARA 2.9.2
     implementation("io.springfox:springfox-swagger2:3.0.0")

@@ -23,3 +23,9 @@ banco do ocorrido informando o cpf do cliente, o número da conta e o valor do d
 Qualquer cliente poderá listar suas contas digitais com seus respectivos saldos considerando seus limites de forma
 separada do saldo normal. Além disso os clientes poderão consultar o extrato de movimentação das suas contas digitais.
 -- ---------------------------------------------------------------------------------------------------------------------
+TECNOLOGIAS USADAS:
+-------------------
+1 - flyway -> Faz a gestão das versões do banco de dados! É uma excelente ferramenta de controle para as
+versões do banco usando as migrations.
+onde cada versão será executada e validada (Usando o comando spring.jpa.hibernate.ddl-auto=validate
+no application.properties) onde a aplicação só será executado se todas as migrations forem validadas.
