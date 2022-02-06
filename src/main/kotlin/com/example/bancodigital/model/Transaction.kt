@@ -1,9 +1,10 @@
 package com.example.bancodigital.model
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.ser.std.DateSerializer
+import com.example.bancodigital.converter.LocalDateConverter
 import java.math.BigDecimal
 import java.time.LocalDate
+import javax.persistence.Column
+import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -11,8 +12,6 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
-import javax.persistence.Temporal
-import javax.persistence.TemporalType
 import javax.validation.constraints.NotNull
 
 @Entity
@@ -24,7 +23,7 @@ data class Transaction(
     val description: String,
     val observation: String,
     val value: BigDecimal,
-    @JsonSerialize(using = DateSerializer::class)
+    @Convert(converter = LocalDateConverter::class)
     val dateTransaction: LocalDate,
     @NotNull
     @Enumerated(EnumType.STRING)

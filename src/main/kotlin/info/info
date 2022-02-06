@@ -25,7 +25,8 @@ separada do saldo normal. Além disso os clientes poderão consultar o extrato d
 -- ---------------------------------------------------------------------------------------------------------------------
 TECNOLOGIAS USADAS:
 -------------------
-1 - flyway -> Faz a gestão das versões do banco de dados! É uma excelente ferramenta de controle para as
+1 - Flyway -> Faz a gestão das versões do banco de dados! É uma excelente ferramenta de controle para as
 versões do banco usando as migrations.
 onde cada versão será executada e validada (Usando o comando spring.jpa.hibernate.ddl-auto=validate
 no application.properties) onde a aplicação só será executado se todas as migrations forem validadas.
+2 - Spring-Security -> Implementa as regaras de acesso ao sistema. Será evoluido com JWT.

@@ -1,12 +1,12 @@
 package com.example.bancodigital.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.ser.std.DateSerializer
+import com.example.bancodigital.converter.LocalDateConverter
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import org.hibernate.validator.constraints.Length
 import java.time.LocalDate
+import java.util.*
 import javax.persistence.Column
-import javax.persistence.Embedded
+import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
@@ -22,18 +22,49 @@ data class Holder(
    val id: Long,
    @Length(min=2, max=120)
    @NotNull
-   val name: String,
+   val name: String?,
    @Length(min=11, max=11)
    @Column(unique=true, nullable = false)
-   val nationalRegistration: String,
+   val nationalRegistration: String?,
    @Column(nullable = false)
-   @JsonSerialize(using = DateSerializer::class)
-   val birthDate: LocalDate,
-   val active: Boolean,
-   @Embedded
-   val address: Address,
-   val info: String,
+   @Convert(converter = LocalDateConverter::class)
+   val birthDate: LocalDate?,
+   val active: Boolean?,
+   val info: String?,
+   @OneToMany(mappedBy = "holder")
+   @JsonManagedReference
+   @Column(nullable = true)
+   val accounts: List<Account>?,
    @OneToMany(mappedBy = "holder", fetch = FetchType.EAGER)
-   @JsonIgnore
-   val accounts: List<Account>,
-   )
+   @Column(nullable = true)
+   @JsonManagedReference
+   val address: List<Address>?
+){
+
+   companion object {
+
+      fun updateHolder(id: Long, holder: Holder, info: String) = Holder(
+         id = id,
+         name = holder.name,
+         nationalRegistration = holder.nationalRegistration,
+         active = holder.active,
+         birthDate = holder.birthDate,
+         info = info,
+         accounts = holder.accounts,
+         address = holder.address
+      )
+
+      fun updateActiveProperty(id: Long, holder: Optional<Holder>, active: Boolean) = Holder(
+         id = id,
+         name = holder.get().name,
+         nationalRegistration = holder.get().nationalRegistration,
+         active = active,
+         birthDate = holder.get().birthDate,
+         info = holder.get().info,
+         accounts = holder.get().accounts,
+         address = holder.get().address
+      )
+   }
+
+
+}

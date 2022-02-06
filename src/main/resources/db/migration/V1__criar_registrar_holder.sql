@@ -4,14 +4,22 @@ CREATE TABLE holder(
        national_registration VARCHAR(11)NOT NULL,
        birth_date DATE NOT NULL,
        active BOOLEAN DEFAULT TRUE,
-       street VARCHAR(50) NOT NULL,
-       number VARCHAR(10) NOT NULL,
-       complement VARCHAR(20) NOT NULL,
-       neighborhood VARCHAR(20) NOT NULL,
-       zip_code VARCHAR(10) NOT NULL,
-       city VARCHAR(30) NOT NULL,
-       country VARCHAR(20)  NOT NULL,
        info VARCHAR(100)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------
+CREATE TABLE address(
+        id BIGINT(20) PRIMARY KEY AUTO_INCREMENT,
+        street VARCHAR(50) NOT NULL,
+        number VARCHAR(10) NOT NULL,
+        complement VARCHAR(20) NOT NULL,
+        neighborhood VARCHAR(20) NOT NULL,
+        zip_code VARCHAR(10) NOT NULL,
+        city VARCHAR(30) NOT NULL,
+        country VARCHAR(20)  NOT NULL,
+        address_id BIGINT(20) NOT NULL,
+        holder_id BIGINT(20) NOT NULL,
+        FOREIGN KEY (address_id) REFERENCES address (id),
+        FOREIGN KEY (holder_id) REFERENCES holder (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- ---------------------------------------------
 CREATE TABLE account(
@@ -40,8 +48,11 @@ CREATE TABLE transaction(
     FOREIGN KEY (transaction_id) REFERENCES transaction (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- ----------------------------------------------------------
-INSERT INTO holder(name, national_registration, birth_date, active, street, number, complement, neighborhood, zip_code, city, country, info)
-VALUES('Luiz Paulo Aureliano', '99999999999', '1974-07-13', true, 'Rua Bruce Wayne', '2131', 'casa01', 'Boa Vista', '99999-999', 'São Gonçalo', 'Rio de Janeiro',null);
+INSERT INTO holder(name, national_registration, birth_date, active, info)
+VALUES('Luiz Paulo Aureliano', '99999999999', '1974-07-13', true, null);
+
+INSERT INTO address(street, number, complement, neighborhood, zip_code, city, country, address_id, holder_id)
+VALUES('Rua Bruce Wayne', '2131', 'casa01', 'Boa Vista', '99999-999', 'São Gonçalo', 'Rio de Janeiro', 1, 1);
 
 INSERT INTO account(balance, active, account_number, date_creation, account_type, account_id, holder_id)
 VALUES(100.0, true, 1, '2022-02-05', 'NORMAL', 1, 1);
