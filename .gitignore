@@ -132,3 +132,4 @@
 /build/classes/kotlin/main/com/example/bancodigital/config/WebSecurityConfig.class
 /build/classes/kotlin/main/com/example/bancodigital/util/ValidateBirthDate.class
 /build/classes/kotlin/main/com/example/bancodigital/util/ValidateNationalRegistration.class
+*.class
