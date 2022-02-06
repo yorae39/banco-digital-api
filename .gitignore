@@ -130,3 +130,5 @@
 /build/resources/main/db/migration/V1__criar_registrar_holder.sql
 /build/resources/main/db/migration/V2__criar_registrar_role.sql
 /build/classes/kotlin/main/com/example/bancodigital/config/WebSecurityConfig.class
+/build/classes/kotlin/main/com/example/bancodigital/util/ValidateBirthDate.class
+/build/classes/kotlin/main/com/example/bancodigital/util/ValidateNationalRegistration.class
