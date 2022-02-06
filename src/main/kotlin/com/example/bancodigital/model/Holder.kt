@@ -1,6 +1,7 @@
 package com.example.bancodigital.model
 
 import com.example.bancodigital.converter.LocalDateConverter
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import org.hibernate.validator.constraints.Length
 import java.time.LocalDate
@@ -30,6 +31,9 @@ data class Holder(
    @Convert(converter = LocalDateConverter::class)
    val birthDate: LocalDate?,
    val active: Boolean?,
+   @JsonIgnore
+   @Convert(converter = LocalDateConverter::class)
+   var dateCreation: LocalDate?,
    val info: String?,
    @OneToMany(mappedBy = "holder")
    @JsonManagedReference
@@ -48,6 +52,7 @@ data class Holder(
          name = holder.name,
          nationalRegistration = holder.nationalRegistration,
          active = holder.active,
+         dateCreation = holder.dateCreation,
          birthDate = holder.birthDate,
          info = info,
          accounts = holder.accounts,
@@ -59,6 +64,7 @@ data class Holder(
          name = holder.get().name,
          nationalRegistration = holder.get().nationalRegistration,
          active = active,
+         dateCreation = holder.get().dateCreation,
          birthDate = holder.get().birthDate,
          info = holder.get().info,
          accounts = holder.get().accounts,

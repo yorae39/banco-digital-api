@@ -22,7 +22,7 @@ interface HolderApi {
     fun findAll(): List<Holder>
 
     @ApiOperation(value = "Create holder", response = String::class)
-    fun createHolder(holder: Holder, httpServletResponse: HttpServletResponse): ResponseEntity<Holder>
+    fun createHolder(holder: Holder, httpServletResponse: HttpServletResponse): ResponseEntity<Any>
 
     @ApiOperation(value = "Get holder by id", response = Holder::class)
     fun findById(id: Long): ResponseEntity<Optional<Holder>>

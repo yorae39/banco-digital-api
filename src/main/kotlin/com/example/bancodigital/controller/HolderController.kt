@@ -3,6 +3,8 @@ package com.example.bancodigital.controller
 import com.example.bancodigital.event.CreateEvent
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.service.HolderService
+import com.example.bancodigital.util.ValidateBirthDate
+import com.example.bancodigital.util.ValidateNationalRegistration
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -26,6 +28,8 @@ import javax.validation.Valid
 class HolderController(
     val holderService: HolderService,
     val publisher: ApplicationEventPublisher,
+    val validateNationalRegistration: ValidateNationalRegistration,
+    val validateBirthDate: ValidateBirthDate
 ) : HolderApi {
 
     @ResponseStatus(HttpStatus.OK)
@@ -38,10 +42,21 @@ class HolderController(
     override fun createHolder(
         @Valid @RequestBody holder: Holder,
         httpServletResponse: HttpServletResponse,
-    ): ResponseEntity<Holder> {
-        val savedHolder = holderService.createHolder(holder)
-        publisher.publishEvent(CreateEvent(this, httpServletResponse, savedHolder.id))
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedHolder)
+    ): ResponseEntity<Any> {
+        return if (holder.nationalRegistration?.let { validateNationalRegistration.isNationalRegistration(it) } == false){
+            val info = "Holder national registration [ ${holder.nationalRegistration} ] is invalid"
+            ResponseEntity.ok(info)
+        }else if(holder.birthDate?.let { validateBirthDate.calculateAge(it, LocalDate.now()) }!! < 18) {
+            val info = "The holder is under eighteen years of age"
+            ResponseEntity.ok(info)
+        }else if (holder.nationalRegistration?.let { holderService.checkNationalRegistration(it) } == true) {
+            val info = "There is already a registered holder with this national registration"
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(info)
+        }else {
+            val savedHolder = holderService.createHolder(holder)
+            publisher.publishEvent(CreateEvent(this, httpServletResponse, savedHolder.id))
+            ResponseEntity.status(HttpStatus.CREATED).body(savedHolder)
+        }
     }
 
     @RequestMapping(value = ["/findById/{id}"],

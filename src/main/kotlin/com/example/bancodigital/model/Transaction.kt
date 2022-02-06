@@ -3,7 +3,6 @@ package com.example.bancodigital.model
 import com.example.bancodigital.converter.LocalDateConverter
 import java.math.BigDecimal
 import java.time.LocalDate
-import javax.persistence.Column
 import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.EnumType

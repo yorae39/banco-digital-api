@@ -1,9 +1,10 @@
 CREATE TABLE holder(
-       id BIGINT(20)PRIMARY KEY AUTO_INCREMENT,
+       id BIGINT(20) PRIMARY KEY AUTO_INCREMENT,
        name VARCHAR(100) NOT NULL,
-       national_registration VARCHAR(11)NOT NULL,
+       national_registration VARCHAR(11) NOT NULL UNIQUE,
        birth_date DATE NOT NULL,
        active BOOLEAN DEFAULT TRUE,
+       date_creation DATE NOT NULL,
        info VARCHAR(100)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- --------------------------------------------
@@ -48,8 +49,8 @@ CREATE TABLE transaction(
     FOREIGN KEY (transaction_id) REFERENCES transaction (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- ----------------------------------------------------------
-INSERT INTO holder(name, national_registration, birth_date, active, info)
-VALUES('Luiz Paulo Aureliano', '99999999999', '1974-07-13', true, null);
+INSERT INTO holder(name, national_registration, birth_date, active, date_creation, info)
+VALUES('Luiz Paulo Aureliano', '72102792021', '1974-07-13', true, '2022-02-05', null);
 
 INSERT INTO address(street, number, complement, neighborhood, zip_code, city, country, address_id, holder_id)
 VALUES('Rua Bruce Wayne', '2131', 'casa01', 'Boa Vista', '99999-999', 'São Gonçalo', 'Rio de Janeiro', 1, 1);

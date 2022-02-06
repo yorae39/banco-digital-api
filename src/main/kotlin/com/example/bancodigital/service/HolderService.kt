@@ -2,12 +2,14 @@ package com.example.bancodigital.service
 
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.repository.HolderRepository
+import com.example.bancodigital.util.ValidateNationalRegistration
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Example
 import org.springframework.stereotype.Service
 import java.text.Format
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDate
 import java.util.*
 
 
@@ -17,6 +19,7 @@ class HolderService(
 ) {
 
     fun createHolder(holder: Holder): Holder {
+        holder.dateCreation = LocalDate.now()
         return holderRepository.save(holder)
     }
 
@@ -46,5 +49,9 @@ class HolderService(
         holderRepository.save(updateHolderProperty)
     }
 
+    fun checkNationalRegistration(nationalRegistration: String) : Boolean {
+        val holder = holderRepository.findByNationalRegistration(nationalRegistration)
+        return holder != null
+    }
 
 }
