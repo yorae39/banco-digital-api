@@ -29,7 +29,10 @@ TECNOLOGIAS USADAS:
 versões do banco usando as migrations.
 onde cada versão será executada e validada (Usando o comando spring.jpa.hibernate.ddl-auto=validate
 no application.properties) onde a aplicação só será executado se todas as migrations forem validadas.
+Obs: Uma forma mais rápida de executar uma alteração nas migrations (projeto local) é deletar todas as tabelas no mysql
+após todos os ajustes nas migrations e recriar as mesmas ao subir a aplicação.
 2 - Spring-Security -> Implementa as regaras de acesso ao sistema.
 3 - JWT -> Json Web Token. Tecnologira para autenticação por meio de token.
 4 - JPA -> Java Persistence Api.
 5 - Swagger -> Um "Documentador" / "Testador" da aplicação.
+6 - Junit -> Testes de lógica de uso da aplicação.

@@ -1,10 +1,10 @@
 package com.example.bancodigital.controller
 
+import com.example.bancodigital.dto.HolderDTO
 import com.example.bancodigital.event.CreateEvent
 import com.example.bancodigital.model.Holder
+import com.example.bancodigital.model.response.HolderResponse
 import com.example.bancodigital.service.HolderService
-import com.example.bancodigital.util.ValidateBirthDate
-import com.example.bancodigital.util.ValidateNationalRegistration
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import java.text.Format
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDate
 import java.util.*
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
@@ -27,9 +23,7 @@ import javax.validation.Valid
 @RequestMapping("/holders")
 class HolderController(
     val holderService: HolderService,
-    val publisher: ApplicationEventPublisher,
-    val validateNationalRegistration: ValidateNationalRegistration,
-    val validateBirthDate: ValidateBirthDate
+    val publisher: ApplicationEventPublisher
 ) : HolderApi {
 
     @ResponseStatus(HttpStatus.OK)
@@ -43,16 +37,10 @@ class HolderController(
         @Valid @RequestBody holder: Holder,
         httpServletResponse: HttpServletResponse,
     ): ResponseEntity<Any> {
-        return if (holder.nationalRegistration?.let { validateNationalRegistration.isNationalRegistration(it) } == false){
-            val info = "Holder national registration [ ${holder.nationalRegistration} ] is invalid"
-            ResponseEntity.ok(info)
-        }else if(holder.birthDate?.let { validateBirthDate.calculateAge(it, LocalDate.now()) }!! < 18) {
-            val info = "The holder is under eighteen years of age"
-            ResponseEntity.ok(info)
-        }else if (holder.nationalRegistration?.let { holderService.checkNationalRegistration(it) } == true) {
-            val info = "There is already a registered holder with this national registration"
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(info)
-        }else {
+        val validate = holderService.validateForCreate(holder)
+        return if(validate.isNotEmpty()){
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
+        } else {
             val savedHolder = holderService.createHolder(holder)
             publisher.publishEvent(CreateEvent(this, httpServletResponse, savedHolder.id))
             ResponseEntity.status(HttpStatus.CREATED).body(savedHolder)
@@ -67,13 +55,26 @@ class HolderController(
         return if (!holder.isPresent) ResponseEntity.notFound().build() else ResponseEntity.ok(holder)
     }
 
+    @RequestMapping(value = ["/findByExternalKey/{externalKey}"],
+        method = [RequestMethod.GET],
+        produces = [MediaType.APPLICATION_JSON_VALUE])
+    override fun findByExternalKey(@PathVariable externalKey: String): ResponseEntity<Holder?> {
+        val holder = holderService.findByExternalKey(externalKey)
+        return if (holder == null) ResponseEntity.notFound().build() else ResponseEntity.ok(holder)
+    }
+
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = ["/update/{id}"],
         method = [RequestMethod.PUT],
         consumes = [MediaType.APPLICATION_JSON_VALUE])
-    override fun update(@PathVariable id: Long, @RequestBody holder: Holder): ResponseEntity<Holder> {
-        val savedHolder = holderService.updateHolder(id, holder)
-        return ResponseEntity.ok(savedHolder)
+    override fun update(@PathVariable id: Long, @RequestBody holderDTO: HolderDTO): ResponseEntity<Any> {
+        val validate = holderService.validateForUpdate(holderDTO)
+        return if(validate.isNotEmpty()){
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
+        } else {
+            val savedHolder = holderService.updateHolder(id, holderDTO)
+            ResponseEntity.ok(HolderResponse.from(savedHolder))
+        }
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -85,11 +86,12 @@ class HolderController(
         @PathVariable active: Boolean,
     ): ResponseEntity<String> {
         holderService.updateActiveProperty(id, active)
-        val info = "Holder id : $id updated active for $active"
+        val info = "Holder id : $id updated property active for $active"
         return ResponseEntity.ok(info)
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    //ALTERADO PARA USAR EXCLUSÃO LÓGICA ACIMA.DEIXO COMO EXEMPLO
+    /*@ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = ["/delete/{id}"], method = [RequestMethod.DELETE])
     override fun delete(@PathVariable id: Long): ResponseEntity<String> {
         val actualDate = Date.from(Instant.now())
@@ -98,6 +100,6 @@ class HolderController(
         val info = "Holder id : $id removed  in date $date"
         holderService.delete(id)
         return ResponseEntity.ok(info)
-    }
+    }*/
 
 }

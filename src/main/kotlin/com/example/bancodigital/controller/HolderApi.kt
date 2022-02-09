@@ -1,5 +1,6 @@
 package com.example.bancodigital.controller
 
+import com.example.bancodigital.dto.HolderDTO
 import com.example.bancodigital.model.Holder
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -27,13 +28,17 @@ interface HolderApi {
     @ApiOperation(value = "Get holder by id", response = Holder::class)
     fun findById(id: Long): ResponseEntity<Optional<Holder>>
 
+    @ApiOperation(value = "Get holder by externalKey", response = Holder::class)
+    fun findByExternalKey(externalKey: String): ResponseEntity<Holder?>
+
     @ApiOperation(value = "Update holder by holder id", response = Holder::class)
-    fun update(id: Long, holder: Holder): ResponseEntity<Holder>
+    fun update(id: Long, holderDTO: HolderDTO): ResponseEntity<Any>
 
     @ApiOperation(value = "Update active property status from by holder id", response = Holder::class)
     fun updateActiveProperty(id: Long, active: Boolean): ResponseEntity<String>
 
-    @ApiOperation(value = "Delete holder by holder id", response = String::class)
-    fun delete(id: Long): ResponseEntity<String>
+    //ALTERADO PARA USAR EXCLUSÃO LÓGICA ACIMA
+    /*@ApiOperation(value = "Delete holder by holder id", response = String::class)
+    fun delete(id: Long): ResponseEntity<String>*/
 
 }

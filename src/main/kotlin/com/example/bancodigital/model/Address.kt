@@ -1,6 +1,11 @@
 package com.example.bancodigital.model
 
+import com.example.bancodigital.converter.LocalDateConverter
 import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonIgnore
+import java.time.LocalDate
+import javax.persistence.Column
+import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
@@ -12,6 +17,7 @@ import javax.persistence.ManyToOne
 data class Address(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     val id: Long,
     val street: String,
     val number: String,
@@ -20,7 +26,10 @@ data class Address(
     val zipCode: String,
     val city: String,
     val country: String,
-    @ManyToOne(fetch = FetchType.EAGER)
+    @Convert(converter = LocalDateConverter::class)
+    @Column(nullable = true)
+    var dateCreation: LocalDate,
+    @ManyToOne
     @JsonBackReference
     val holder: Holder
 )

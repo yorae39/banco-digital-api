@@ -1,8 +1,11 @@
 package com.example.bancodigital.model
 
 import com.example.bancodigital.converter.LocalDateConverter
+import com.example.bancodigital.dto.HolderDTO
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonManagedReference
+import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 import java.time.LocalDate
 import java.util.*
@@ -17,46 +20,38 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity
+@JsonIgnoreProperties(value = ["accounts"])
 data class Holder(
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    val id: Long,
+   @Type(type="uuid-char")
+   val externalKey: UUID = UUID.randomUUID(),
    @Length(min=2, max=120)
-   @NotNull
-   val name: String?,
+   var name: String,
    @Length(min=11, max=11)
    @Column(unique=true, nullable = false)
-   val nationalRegistration: String?,
-   @Column(nullable = false)
+   val nationalRegistration: String,
    @Convert(converter = LocalDateConverter::class)
-   val birthDate: LocalDate?,
-   val active: Boolean?,
-   @JsonIgnore
+   val birthDate: LocalDate,
+   val active: Boolean = true,
    @Convert(converter = LocalDateConverter::class)
-   var dateCreation: LocalDate?,
-   val info: String?,
-   @OneToMany(mappedBy = "holder")
-   @JsonManagedReference
    @Column(nullable = true)
-   val accounts: List<Account>?,
-   @OneToMany(mappedBy = "holder", fetch = FetchType.EAGER)
-   @Column(nullable = true)
-   @JsonManagedReference
-   val address: List<Address>?
+   val dateCreation: LocalDate = LocalDate.now(),
+   val info: String
 ){
 
    companion object {
 
-      fun updateHolder(id: Long, holder: Holder, info: String) = Holder(
+      fun updateHolder(id: Long, holderDTO: HolderDTO, savedHolder: Optional<Holder>, info: String) = Holder(
          id = id,
-         name = holder.name,
-         nationalRegistration = holder.nationalRegistration,
-         active = holder.active,
-         dateCreation = holder.dateCreation,
-         birthDate = holder.birthDate,
-         info = info,
-         accounts = holder.accounts,
-         address = holder.address
+         externalKey =savedHolder.get().externalKey,
+         name = holderDTO.name,
+         nationalRegistration = savedHolder.get().nationalRegistration,
+         active = savedHolder.get().active,
+         dateCreation = savedHolder.get().dateCreation,
+         birthDate = holderDTO.birthDate,
+         info = info
       )
 
       fun updateActiveProperty(id: Long, holder: Optional<Holder>, active: Boolean) = Holder(
@@ -66,11 +61,7 @@ data class Holder(
          active = active,
          dateCreation = holder.get().dateCreation,
          birthDate = holder.get().birthDate,
-         info = holder.get().info,
-         accounts = holder.get().accounts,
-         address = holder.get().address
+         info = holder.get().info
       )
    }
-
-
 }
