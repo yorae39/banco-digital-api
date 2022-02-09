@@ -6,7 +6,7 @@ CREATE TABLE holder(
        birth_date DATE NOT NULL,
        active BOOLEAN DEFAULT TRUE,
        date_creation DATE NOT NULL,
-       info VARCHAR(100)
+       info VARCHAR(255)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- --------------------------------------------
 CREATE TABLE address(
@@ -19,6 +19,7 @@ CREATE TABLE address(
         city VARCHAR(30) NOT NULL,
         country VARCHAR(20)  NOT NULL,
         date_creation DATE NOT NULL,
+        info VARCHAR(255),
         holder_id BIGINT(20) NOT NULL,
         FOREIGN KEY (holder_id) REFERENCES holder (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -50,8 +51,8 @@ CREATE TABLE transaction(
 INSERT INTO holder(external_key, name, national_registration, birth_date, active, date_creation, info)
 VALUES('654b18a4-e94f-4aa0-94bd-591da9312fea', 'Luiz Paulo Aureliano', '72102792021', '1974-07-13', true, '2022-02-05', null);
 
-INSERT INTO address(street, number, complement, neighborhood, zip_code, city, country, date_creation,  holder_id)
-VALUES('Rua Bruce Wayne', '2131', 'casa01', 'Boa Vista', '99999-999', 'São Gonçalo', 'Rio de Janeiro', '2022-02-05', 1);
+INSERT INTO address(street, number, complement, neighborhood, zip_code, city, country, date_creation, info,  holder_id)
+VALUES('Rua Bruce Wayne', '2131', 'casa01', 'Boa Vista', '99999-999', 'São Gonçalo', 'Rio de Janeiro', '2022-02-05', null, 1);
 
 -- SALDO INSERIDO COMO EXEMPLO
 INSERT INTO account(external_key, balance, active, account_number, date_creation, account_type, holder_id)
