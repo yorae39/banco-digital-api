@@ -1,12 +1,8 @@
 package com.example.bancodigital.model
 
 import com.example.bancodigital.converter.LocalDateConverter
-import com.example.bancodigital.dto.AccountDTO
-import com.example.bancodigital.dto.HolderDTO
 import com.example.bancodigital.util.Constants.Companion.MAX_ACCOUNT_NUMBER
-import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.hibernate.annotations.Type
 import java.time.LocalDate
 import java.util.*
@@ -15,14 +11,12 @@ import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
-import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
-import javax.validation.constraints.NotNull
 import kotlin.random.Random
 
 @Entity
@@ -42,11 +36,7 @@ data class Account(
     var accountType: AccountType = AccountType.NORMAL,
     @ManyToOne
     @JoinColumn
-    var holder: Holder,
-    @OneToMany(mappedBy = "account")
-    @Column(nullable = true)
-    @JsonIgnore
-    val transactions: List<Transaction> = listOf(),
+    var holder: Holder
 ){
 
     fun changeNumber() {
@@ -65,8 +55,7 @@ data class Account(
             accountNumber = savedAccount.get().accountNumber,
             dateCreation = savedAccount.get().dateCreation,
             accountType = savedAccount.get().accountType,
-            holder = account.holder,
-            transactions = savedAccount.get().transactions
+            holder = account.holder
         )
 
         fun updateActiveProperty(id: Long, savedAccount: Optional<Account>, active: Boolean) = Account(
@@ -77,8 +66,31 @@ data class Account(
             accountNumber = savedAccount.get().accountNumber,
             dateCreation = savedAccount.get().dateCreation,
             accountType = savedAccount.get().accountType,
-            holder = savedAccount.get().holder,
-            transactions = savedAccount.get().transactions
+            holder = savedAccount.get().holder
         )
+
+        fun operationOfCredit(balance: Long, savedAccount: Account) =
+            Account(
+                id = savedAccount.id,
+                externalKey = savedAccount.externalKey,
+                balance = balance,
+                active = savedAccount.active,
+                accountNumber = savedAccount.accountNumber,
+                dateCreation = savedAccount.dateCreation,
+                accountType = savedAccount.accountType,
+                holder = savedAccount.holder
+            )
+
+        fun operationOfDebit(savedAccount: Account) =
+            Account(
+                id = savedAccount.id,
+                externalKey = savedAccount.externalKey,
+                balance = savedAccount.balance,
+                active = savedAccount.active,
+                accountNumber = savedAccount.accountNumber,
+                dateCreation = savedAccount.dateCreation,
+                accountType = savedAccount.accountType,
+                holder = savedAccount.holder
+            )
     }
 }
