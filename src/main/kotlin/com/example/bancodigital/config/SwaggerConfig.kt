@@ -23,10 +23,20 @@ class SwaggerConfig {
 
     @Bean
     fun api(): Docket {
-        return Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.example"))
-            .paths(PathSelectors.any()).build().apiInfo(apiInfo())
+        return Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.example.bancodigital.controller"))
+            .paths(PathSelectors.any()).build().apiInfo(apiInfo()).groupName("public")
             .securitySchemes(securitySchemes()).securityContexts(addSecurityPaths())
     }
+
+    @Bean
+    fun adminApi(): Docket =
+        Docket(DocumentationType.SWAGGER_2)
+            .apiInfo(apiInfo())
+            .groupName("admin")
+            .select()
+            .apis(RequestHandlerSelectors.basePackage("com.example.bancodigital.admin"))
+            .paths(PathSelectors.regex("/internal.*"))
+            .build()
 
     fun apiInfo(): ApiInfo {
         return ApiInfo("DIGITAL BANK WEB REST API", "Product API to perform CRUD opertations",
