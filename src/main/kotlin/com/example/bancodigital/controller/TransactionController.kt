@@ -4,6 +4,7 @@ import com.example.bancodigital.dto.CreditDTO
 import com.example.bancodigital.dto.DebitDTO
 import com.example.bancodigital.model.Transaction
 import com.example.bancodigital.service.TransactionService
+import io.swagger.annotations.Api
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -16,6 +17,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/transactions")
+@Api(tags = ["Transaction"])
 class TransactionController(
     val transactionService: TransactionService
 ): TransactionAPi {

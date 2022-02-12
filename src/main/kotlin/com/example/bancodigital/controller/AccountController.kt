@@ -5,6 +5,7 @@ import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.response.AccountResponse
 import com.example.bancodigital.service.AccountService
 import com.example.bancodigital.service.HolderService
+import io.swagger.annotations.Api
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/accounts")
+@Api(tags = ["Account"])
 class AccountController(
     val accountService: AccountService,
     val holderService: HolderService,

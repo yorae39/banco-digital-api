@@ -33,6 +33,18 @@ Obs: Uma forma mais rápida de executar uma alteração nas migrations (projeto 
 após todos os ajustes nas migrations e recriar as mesmas ao subir a aplicação.
 2 - Spring-Security -> Implementa as regaras de acesso ao sistema.
 3 - JWT -> Json Web Token. Tecnologira para autenticação por meio de token.
+Obs: Usa o token no pop-up com o Bearer no inicio espaço e o token gerado dentro de caixa de consulta.
+Ex:
+Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiZXhwIjoxNjQ0NjM0NzUxLCJpYXQiOjE2NDQ2MzQ0MzN9.8grPMeGKi_w7Oe_hedt7NotuxiBkXspC-7TyynQhxB59-biJU_gQu1MQruzPITihpvw70a4hVOSuneAmHemJtA
+-- ---------------------------------------------------------
 4 - JPA -> Java Persistence Api.
 5 - Swagger -> Um "Documentador" / "Testador" da aplicação.
 6 - Junit -> Testes de lógica de uso da aplicação.
+-- ---------------------------------------------------------
+http://localhost:8080/swagger-ui.html
+
+$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6 = password
+
+SITE PARA TESTAR A CRIPTOGRAFIA:
+https://bcrypt-generator.com/
+-- -----------------------------------------------------------

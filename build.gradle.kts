@@ -20,7 +20,6 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -32,8 +31,6 @@ dependencies {
     implementation("com.google.zxing:core:3.4.1")
     // https://mvnrepository.com/artifact/com.google.zxing/javase
     implementation("com.google.zxing:javase:3.4.1")
-    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.5")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-configuration-processor
     implementation("org.springframework.boot:spring-boot-configuration-processor:2.6.3")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
@@ -43,12 +40,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.flywaydb/flyway-maven-plugin
     implementation("org.flywaydb:flyway-maven-plugin:7.1.1")
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
-    //VERIRIFICAR SE VAI DAR ERRO ENTÃO MIGRAR PARA 2.9.2
-    implementation("io.springfox:springfox-swagger2:3.0.0")
+    implementation("io.springfox:springfox-swagger2:2.9.2")
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
-    implementation("io.springfox:springfox-swagger-ui:3.0.0")
-    // https://mvnrepository.com/artifact/io.swagger/swagger-jaxrs
-    implementation("io.swagger:swagger-jaxrs:1.6.4")
+    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+    // https://mvnrepository.com/artifact/io.springfox/springfox-bean-validators
+    implementation("io.springfox:springfox-bean-validators:2.9.2")
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-java8
     implementation("org.hibernate:hibernate-java8:5.6.5.Final")
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
@@ -57,16 +53,16 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt:0.9.1")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
     implementation("org.springframework.boot:spring-boot-starter-security:2.6.3")
-    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
-    testImplementation("org.springframework.security:spring-security-test:5.6.1")
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation("mysql:mysql-connector-java:8.0.28")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin
     implementation("org.springframework.boot:spring-boot-maven-plugin:2.6.3")
+    // https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin
+    implementation("org.apache.maven.plugins:maven-compiler-plugin:3.9.0")
     // https://mvnrepository.com/artifact/org.flywaydb/flyway-maven-plugin
     implementation("org.flywaydb:flyway-maven-plugin:8.4.4")
-    //developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("com.h2database:h2")
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly("org.projectlombok:lombok:1.18.22")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

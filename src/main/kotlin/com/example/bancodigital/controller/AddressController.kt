@@ -5,6 +5,7 @@ import com.example.bancodigital.model.Address
 import com.example.bancodigital.model.response.AddressResponse
 import com.example.bancodigital.service.AddressService
 import com.example.bancodigital.service.HolderService
+import io.swagger.annotations.Api
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -20,6 +21,7 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/address")
+@Api(tags = ["Address"])
 class AddressController(
     val addressService: AddressService,
     val holderService: HolderService

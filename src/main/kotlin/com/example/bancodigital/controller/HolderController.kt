@@ -5,6 +5,7 @@ import com.example.bancodigital.event.CreateEvent
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.model.response.HolderResponse
 import com.example.bancodigital.service.HolderService
+import io.swagger.annotations.Api
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -21,6 +22,7 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/holders")
+@Api(tags = ["Holder"])
 class HolderController(
     val holderService: HolderService,
     val publisher: ApplicationEventPublisher

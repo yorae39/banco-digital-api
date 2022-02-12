@@ -17,4 +17,11 @@ data class Role(
     val users: Set<User>,
     @Enumerated(EnumType.STRING)
     val roleType: RoleType
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        val otherObject = other as? Role ?: return false
+        return otherObject.id == id && otherObject.roleType == roleType
+    }
+
+    override fun hashCode(): Int = id.hashCode() * 31 + roleType.hashCode()
+}

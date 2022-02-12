@@ -1,6 +1,5 @@
 package com.example.bancodigital.dto
 
-import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.Address
 import com.example.bancodigital.model.Holder
 
