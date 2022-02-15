@@ -19,11 +19,5 @@ data class DebitDTO(
             observation = debitByQrcodeDTO.observation,
             value = debitByQrcodeDTO.value
         )
-
-        fun fromBarcode(debitByBarcode: DebitByBarcode) = DebitDTO(
-            description = debitByBarcode.description,
-            observation = debitByBarcode.observation,
-            value = debitByBarcode.value
-        )
     }
 }

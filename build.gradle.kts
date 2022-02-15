@@ -61,6 +61,8 @@ dependencies {
     implementation("org.apache.maven.plugins:maven-compiler-plugin:3.9.0")
     // https://mvnrepository.com/artifact/org.flywaydb/flyway-maven-plugin
     implementation("org.flywaydb:flyway-maven-plugin:8.4.4")
+    // https://mvnrepository.com/artifact/net.sourceforge.barbecue/barbecue
+    implementation("net.sourceforge.barbecue:barbecue:1.5-beta1")
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly("org.projectlombok:lombok:1.18.22")
 

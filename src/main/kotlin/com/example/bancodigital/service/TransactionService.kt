@@ -1,11 +1,12 @@
 package com.example.bancodigital.service
 
 import com.example.bancodigital.dto.CreditDTO
-import com.example.bancodigital.dto.DebitByBarcode
+import com.example.bancodigital.dto.CreditByBarcode
 import com.example.bancodigital.dto.DebitByQrcodeDTO
 import com.example.bancodigital.dto.DebitDTO
 import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.AccountType
+import com.example.bancodigital.model.BarcodeRegister
 import com.example.bancodigital.model.Transaction
 import com.example.bancodigital.repository.AccountRepository
 import com.example.bancodigital.repository.TransactionRepository
@@ -39,7 +40,7 @@ class TransactionService(
 
     fun transactionOfDebit(debitDTO: DebitDTO, externalKey: UUID): String {
         val account = accountRepository.findByExternalKey(externalKey)
-        return savedAccount(account, debitDTO, null, null)
+        return savedAccountForDebit(account, debitDTO, null)
     }
 
     fun transactionOfDebitByQrcode(debitByQrcodeDTO: DebitByQrcodeDTO): String {
@@ -47,22 +48,21 @@ class TransactionService(
         if (transaction != null) return "The QR Code has already been used in the system"
         val account = accountRepository.findByExternalKey(UUID.fromString(debitByQrcodeDTO.accountExternalKey))
         val debitDTO = DebitDTO.fromQrcode(debitByQrcodeDTO)
-        return savedAccount(account, debitDTO, debitByQrcodeDTO.externalKey, null)
+        return savedAccountForDebit(account, debitDTO, debitByQrcodeDTO.externalKey)
     }
 
-    fun transactionOfDebitByBarcode(debitByBarcode: DebitByBarcode): String {
-        val transaction = transactionRepository.findByBarcodeExternalKey(UUID.fromString(debitByBarcode.externalKey))
+    fun transactionOfCreditByBarcode(barcodeRegister: BarcodeRegister): String {
+        val transaction = transactionRepository.findByBarcodeExternalKey(barcodeRegister.externalKey)
         if (transaction != null) return "The Barcode has already been used in the system"
-        val account = accountRepository.findByExternalKey(UUID.fromString(debitByBarcode.accountExternalKey))
-        val debitDTO = DebitDTO.fromBarcode(debitByBarcode)
-        return savedAccount(account, debitDTO, null, debitByBarcode.externalKey)
+        val account = accountRepository.findByExternalKey(barcodeRegister.accountExternalKey)
+        val creditDTO = CreditDTO.fromBarcode(barcodeRegister)
+        return savedAccountForCredit(account, creditDTO, barcodeRegister.externalKey)
     }
 
-    private fun savedAccount(
+    private fun savedAccountForDebit(
         savedAccount: Account?,
         debitDTO: DebitDTO,
         qrcodeExternalKey: String?,
-        barcodeExternalKey: String?
     ): String {
         return if (savedAccount != null) {
             savedAccount.balance -= debitDTO.value.toLong()
@@ -70,7 +70,6 @@ class TransactionService(
             accountRepository.save(debit)
             val transaction = Transaction.operationOfDebit(debitDTO, savedAccount)
             if (qrcodeExternalKey!= null) transaction.qrcodeExternalKey = UUID.fromString(qrcodeExternalKey)
-            if (barcodeExternalKey!= null) transaction.barcodeExternalKey = UUID.fromString(barcodeExternalKey)
             transactionRepository.save(transaction)
             return "Debit entered successfully : Actual Balance = ${debit.balance}, Description = ${debitDTO.description}"
         } else {
@@ -78,7 +77,25 @@ class TransactionService(
         }
     }
 
-    fun validations(externalKey: UUID, value: BigDecimal): String {
+    private fun savedAccountForCredit(
+        savedAccount: Account?,
+        creditDTO: CreditDTO,
+        barcodeExternalKey: UUID
+    ): String {
+        return if (savedAccount != null) {
+            savedAccount.balance += creditDTO.value.toLong()
+            val credit = Account.operationOfCredit(savedAccount.balance, savedAccount)
+            accountRepository.save(credit)
+            val transaction = Transaction.operationOfCredit(creditDTO, savedAccount)
+            transaction.barcodeExternalKey = barcodeExternalKey
+            transactionRepository.save(transaction)
+            return "Credit entered successfully : Actual Balance = ${credit.balance}, Description = ${creditDTO.description}"
+        } else {
+            "Account not found"
+        }
+    }
+
+    fun validationsForDebit(externalKey: UUID, value: BigDecimal): String {
         val savedAccount = accountRepository.findByExternalKey(externalKey)
         return if (savedAccount != null) {
             return if (savedAccount.balance < value.toLong() && savedAccount.accountType == AccountType.NORMAL) {
@@ -91,6 +108,11 @@ class TransactionService(
         } else {
             "Account not found in base"
         }
+    }
+
+    fun validationForCredit(externalKey: UUID): Boolean {
+        val savedAccount = accountRepository.findByExternalKey(externalKey)
+        return savedAccount != null
     }
 
 }

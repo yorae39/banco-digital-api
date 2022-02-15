@@ -1,5 +1,6 @@
 package com.example.bancodigital.dto
 
+import com.example.bancodigital.model.BarcodeRegister
 import java.math.BigDecimal
 
 data class CreditDTO(
@@ -14,5 +15,11 @@ data class CreditDTO(
                 observation = creditDTO.observation,
                 value = creditDTO.value
             )
+
+        fun fromBarcode(barcodeRegister: BarcodeRegister) = CreditDTO(
+            description = barcodeRegister.description,
+            observation = barcodeRegister.observation,
+            value = barcodeRegister.value
+        )
     }
 }

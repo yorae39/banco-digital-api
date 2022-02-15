@@ -2,7 +2,6 @@ package com.example.bancodigital.controller
 
 import com.example.bancodigital.dto.CreditDTO
 import com.example.bancodigital.dto.DebitDTO
-import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.Transaction
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -14,7 +13,7 @@ import java.util.*
 @Api
 interface TransactionAPi {
 
-    @ApiOperation(value = "Get list of transactions in the System ", response = Iterable::class)
+    @ApiOperation(value = "Get list of transactions of a account in the System ", response = Iterable::class)
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "Success"),
         ApiResponse(code = 401, message = "Not authorized!"),
