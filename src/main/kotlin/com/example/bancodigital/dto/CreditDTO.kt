@@ -1,6 +1,5 @@
 package com.example.bancodigital.dto
 
-import com.example.bancodigital.model.TransactionType
 import java.math.BigDecimal
 
 data class CreditDTO(

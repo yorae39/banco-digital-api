@@ -39,6 +39,8 @@ CREATE TABLE account(
 CREATE TABLE transaction(
     id BIGINT(20) PRIMARY KEY AUTO_INCREMENT,
     external_key VARCHAR(255) NOT NULL,
+    qrcode_external_key VARCHAR(255),
+    barcode_external_key VARCHAR(255),
     description VARCHAR(255) NOT NULL,
     observation VARCHAR(255) NOT NULL,
     value NUMERIC,

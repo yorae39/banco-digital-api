@@ -1,7 +1,6 @@
 package com.example.bancodigital.dto
 
 import com.fasterxml.jackson.databind.annotation.JacksonStdImpl
-import io.swagger.annotations.ApiParam
 import lombok.AllArgsConstructor
 import lombok.Builder
 import lombok.Getter
@@ -29,7 +28,4 @@ class QrCodeGenerationDTO(
 
     @NotBlank(message = "generated-for-name must not be empty")
     val generatedForName: String = "",
-) {
-
-
-}
+)

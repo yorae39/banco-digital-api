@@ -1,12 +1,12 @@
 package com.example.bancodigital.admin
 
+import com.example.bancodigital.dto.DebitByQrcodeDTO
 import com.example.bancodigital.dto.QrCodeGenerationDTO
 import com.example.bancodigital.service.QrCodeService
 import com.google.zxing.NotFoundException
 import com.google.zxing.WriterException
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import lombok.AllArgsConstructor
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -38,6 +38,17 @@ class QrCodeController(
         httpServletResponse: HttpServletResponse,
     ) {
         qrCodeService.generate(qrCodeGenerationRequestDto, httpServletResponse)
+    }
+
+    @PostMapping(value = ["/generate/transaction"])
+    @ResponseStatus(value = HttpStatus.OK)
+    @ApiOperation(value = "Returns a .png QR code with provided information decoded inside for transaction")
+    @Throws(IOException::class, WriterException::class)
+    fun qrCodeGenerationHandlerForTransaction(
+        @RequestBody(required = true) debitByQrcodeDTO: @Valid DebitByQrcodeDTO,
+        httpServletResponse: HttpServletResponse,
+    ) {
+        qrCodeService.generateForTransactions(debitByQrcodeDTO, httpServletResponse)
     }
 
     @PutMapping(value = ["/read"], consumes = ["multipart/form-data"])

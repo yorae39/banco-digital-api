@@ -1,5 +1,6 @@
 package com.example.bancodigital.service
 
+import com.example.bancodigital.dto.DebitByQrcodeDTO
 import com.example.bancodigital.dto.QrCodeGenerationDTO
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.zxing.BarcodeFormat
@@ -49,5 +50,30 @@ class QrCodeService {
         MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream)
         outputStream.flush()
     }
+
+    @Throws(IOException::class, WriterException::class)
+    fun generateForTransactions(
+        dto: DebitByQrcodeDTO,
+        response: HttpServletResponse,
+    ) {
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment;filename=" + dto.description.trim().replace(" ", "_").toString() + ".png")
+        val outputStream = BufferedOutputStream(response.outputStream)
+        val writer = QRCodeWriter()
+        val bitMatrix = writer.encode(ObjectMapper().writeValueAsString(dto),
+            BarcodeFormat.QR_CODE, 350, 350)
+        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream)
+        outputStream.flush()
+    }
+
+    @Throws(IOException::class, NotFoundException::class)
+    fun readForQrcodeTransaction(file: MultipartFile): DebitByQrcodeDTO {
+        val bufferedImage = ImageIO.read(file.inputStream)
+        val luminanceSource: LuminanceSource = BufferedImageLuminanceSource(bufferedImage)
+        val binaryBitmap = BinaryBitmap(HybridBinarizer(luminanceSource))
+        val result: Result = MultiFormatReader().decode(binaryBitmap)
+        return ObjectMapper().readValue(result.text, DebitByQrcodeDTO::class.java)
+    }
+
 
 }

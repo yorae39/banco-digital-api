@@ -25,6 +25,10 @@ data class Transaction(
     val id: Long? = null,
     @Type(type="uuid-char")
     val externalKey: UUID = UUID.randomUUID(),
+    @Type(type="uuid-char")
+    var qrcodeExternalKey: UUID? = null,
+    @Type(type="uuid-char")
+    var barcodeExternalKey: UUID? = null,
     val description: String,
     val observation: String,
     val value: BigDecimal,
