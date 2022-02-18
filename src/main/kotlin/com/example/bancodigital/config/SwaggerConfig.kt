@@ -39,7 +39,7 @@ class SwaggerConfig {
             .build()
 
     fun apiInfo(): ApiInfo {
-        return ApiInfo("DIGITAL BANK WEB REST API", "Product API to perform CRUD opertations",
+        return ApiInfo("DIGITAL BANK WEB REST API", "Product API to perform CRUD operations",
             "1.0", "Terms of service",
             Contact("Luiz Paulo Aureliano", "", "lpaureliano74@gmail.com"),
             "License of API", "API license URL", emptyList())

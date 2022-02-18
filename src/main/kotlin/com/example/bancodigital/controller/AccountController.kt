@@ -1,10 +1,9 @@
 package com.example.bancodigital.controller
 
 import com.example.bancodigital.dto.AccountDTO
+import com.example.bancodigital.facade.AccountFacade
 import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.response.AccountResponse
-import com.example.bancodigital.service.AccountService
-import com.example.bancodigital.service.HolderService
 import io.swagger.annotations.Api
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -21,14 +20,13 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("/accounts")
 @Api(tags = ["Account"])
 class AccountController(
-    val accountService: AccountService,
-    val holderService: HolderService,
+    val accountFacade: AccountFacade
 ) : AccountApi {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = ["/findAll"], method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun findAll(): List<Account> {
-        return accountService.findAll()
+        return accountFacade.findAll()
     }
 
     @RequestMapping(value = ["/{holderExternalKey}/save"],
@@ -38,14 +36,14 @@ class AccountController(
         @PathVariable holderExternalKey: UUID,
         httpServletResponse: HttpServletResponse,
     ): ResponseEntity<Any> {
-        val savedHolder = holderService.findByExternalKey(holderExternalKey.toString())
+        val savedHolder = accountFacade.savedHolderByExternalKey(holderExternalKey.toString())
         if (savedHolder != null) {
             val account = AccountDTO.from(savedHolder)
-            val validate = accountService.validations(holderExternalKey)
+            val validate = accountFacade.validations(holderExternalKey)
             return if (validate.isNotEmpty()) {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
             } else {
-                val savedAccount = account.let { accountService.createAccount(it) }
+                val savedAccount = accountFacade.createAccount(account)
                 ResponseEntity.status(HttpStatus.CREATED).body(savedAccount)
             }
         }
@@ -57,7 +55,7 @@ class AccountController(
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun findById(@PathVariable id: Long): ResponseEntity<Optional<Account>> {
-        val account = accountService.findById(id)
+        val account = accountFacade.findById(id)
         return if (!account.isPresent) ResponseEntity.notFound().build() else ResponseEntity.ok(account)
     }
 
@@ -65,7 +63,7 @@ class AccountController(
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun findByExternalKey(@PathVariable externalKey: String): ResponseEntity<AccountResponse> {
-        val account = accountService.findByExternalKey(externalKey)
+        val account = accountFacade.findByExternalKey(externalKey)
         return if (account == null) ResponseEntity.notFound().build() else ResponseEntity.ok(AccountResponse.from(
             account))
     }
@@ -74,14 +72,14 @@ class AccountController(
         method = [RequestMethod.POST],
         produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun transferAccountOtherHolder(@PathVariable id: Long, @PathVariable holderExternalKey: UUID): ResponseEntity<Any> {
-        val savedHolder = holderService.findByExternalKey(holderExternalKey.toString())
+        val savedHolder = accountFacade.savedHolderByExternalKey(holderExternalKey.toString())
         if (savedHolder != null) {
             val account = AccountDTO.from(savedHolder)
-            val validate = accountService.validations(account.holder.externalKey)
+            val validate = accountFacade.validations(account.holder.externalKey)
             return if (validate.isNotEmpty()) {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
             } else {
-                val savedAccount = accountService.updateAccount(id, account)
+                val savedAccount = accountFacade.updateAccount(id, account)
                 ResponseEntity.ok(AccountResponse.from(savedAccount))
             }
         }
@@ -94,7 +92,7 @@ class AccountController(
         method = [RequestMethod.PUT],
         consumes = [MediaType.ALL_VALUE])
     override fun updateActiveProperty(@PathVariable id: Long, @PathVariable active: Boolean): ResponseEntity<String> {
-        val info = accountService.updateActiveProperty(id, active)
+        val info = accountFacade.updateActiveProperty(id, active)
         return ResponseEntity.ok(info)
     }
 

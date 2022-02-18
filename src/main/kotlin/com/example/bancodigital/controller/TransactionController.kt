@@ -2,12 +2,9 @@ package com.example.bancodigital.controller
 
 import com.example.bancodigital.dto.CreditDTO
 import com.example.bancodigital.dto.DebitDTO
+import com.example.bancodigital.facade.TransactionFacade
 import com.example.bancodigital.model.BarcodeRegister
 import com.example.bancodigital.model.Transaction
-import com.example.bancodigital.service.BarcodeService
-import com.example.bancodigital.service.QrCodeService
-import com.example.bancodigital.service.TransactionService
-import com.example.bancodigital.util.BarcodeReader
 import com.google.zxing.NotFoundException
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -30,17 +27,14 @@ import java.util.*
 @RequestMapping("/transactions")
 @Api(tags = ["Transaction"])
 class TransactionController(
-    val transactionService: TransactionService,
-    val qrCodeService: QrCodeService,
-    val barcodeReader: BarcodeReader,
-    val barcodeService: BarcodeService
+    val transactionFacade: TransactionFacade
 ) : TransactionAPi {
 
     @RequestMapping(value = ["/findAll/{id}"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun findTransactionsByAccount(@PathVariable id: Long): List<Transaction> {
-        return transactionService.findTransactionsByAccount(id)
+        return transactionFacade.findTransactionsByAccount(id)
     }
 
     @RequestMapping(value = ["/credit/{externalKey}"],
@@ -50,7 +44,7 @@ class TransactionController(
         @RequestBody creditDTO: CreditDTO,
         @PathVariable externalKey: UUID,
     ): ResponseEntity<String> {
-        val result = transactionService.transactionOfCredit(creditDTO, externalKey)
+        val result = transactionFacade.transactionOfCredit(creditDTO, externalKey)
         return ResponseEntity.ok(result)
     }
 
@@ -58,11 +52,11 @@ class TransactionController(
         method = [RequestMethod.POST],
         produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun debitByAccount(@RequestBody debitDTO: DebitDTO, @PathVariable externalKey: UUID): ResponseEntity<Any> {
-        val validations = transactionService.validationsForDebit(externalKey, debitDTO.value)
+        val validations = transactionFacade.validationsForDebit(externalKey, debitDTO.value)
         return if (validations.isNotEmpty()) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(validations)
         } else {
-            return ResponseEntity.ok(transactionService.transactionOfDebit(debitDTO, externalKey))
+            return ResponseEntity.ok(transactionFacade.transactionOfDebit(debitDTO, externalKey))
         }
     }
 
@@ -75,14 +69,14 @@ class TransactionController(
     fun readQrcode(
         @RequestParam(value = "Qr-code for read for debit", required = true) file: MultipartFile,
     ): ResponseEntity<Any> {
-        val debitByQrcodeDTO = qrCodeService.readForQrcodeTransaction(file)
+        val debitByQrcodeDTO = transactionFacade.readForQrcodeTransaction(file)
 
         val validations =
-            transactionService.validationsForDebit(UUID.fromString(debitByQrcodeDTO.accountExternalKey), debitByQrcodeDTO.value)
+            transactionFacade.validationsForDebit(UUID.fromString(debitByQrcodeDTO.accountExternalKey), debitByQrcodeDTO.value)
         return if (validations.isNotEmpty()) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(validations)
         } else {
-            return ResponseEntity.ok(transactionService.transactionOfDebitByQrcode(debitByQrcodeDTO))
+            return ResponseEntity.ok(transactionFacade.transactionOfDebitByQrcode(debitByQrcodeDTO))
         }
     }
 
@@ -98,13 +92,13 @@ class TransactionController(
         @PathVariable observation: String,
         @RequestParam(value = "Barcode read for credit", required = true) file: MultipartFile,
     ): ResponseEntity<BarcodeRegister> {
-        val creditByBarcode = barcodeReader.decodeImageForCredit(file)
+        val creditByBarcode = transactionFacade.decodeImageForCredit(file)
         creditByBarcode.externalKey = UUID.randomUUID().toString()
         creditByBarcode.accountExternalKey = accountExternalKey
         creditByBarcode.description = description
         creditByBarcode.observation = observation
 
-        return ResponseEntity.ok(barcodeService.register(BarcodeRegister.fromBarcodeRegister(creditByBarcode)))
+        return ResponseEntity.ok(transactionFacade.barcodeRegister(creditByBarcode))
     }
 
     @RequestMapping(value = ["/credit/barcode/{externalKey}"],
@@ -114,11 +108,11 @@ class TransactionController(
     fun consultBarcodeForCredit(
         @PathVariable externalKey: String
     ): ResponseEntity<String> {
-        val barcode = barcodeService.findByBarcode(UUID.fromString(externalKey))
+        val barcode = transactionFacade.findBarcode(externalKey)
         if (barcode != null) {
-            val validation = transactionService.validationForCredit(barcode.accountExternalKey)
+            val validation = transactionFacade.validationForCredit(barcode.accountExternalKey)
             return if (validation) {
-                ResponseEntity.ok(transactionService.transactionOfCreditByBarcode(barcode))
+                ResponseEntity.ok(transactionFacade.transactionOfCreditByBarcode(barcode))
             } else {
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Account not found")
             }
@@ -131,7 +125,7 @@ class TransactionController(
         produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiOperation(value = "Consult all barcodes registered for account with externalKey")
     fun findBarcodeByAccount(@PathVariable accountExternalKey: String): ResponseEntity<List<BarcodeRegister>>  {
-        val barcodeRegister = barcodeService.findBarcodeByAccount(UUID.fromString(accountExternalKey))
+        val barcodeRegister = transactionFacade.findBarcodeByAccount(accountExternalKey)
         return ResponseEntity.ok(barcodeRegister)
     }
 

@@ -2,11 +2,10 @@ package com.example.bancodigital.controller
 
 import com.example.bancodigital.dto.HolderDTO
 import com.example.bancodigital.event.CreateEvent
+import com.example.bancodigital.facade.HolderFacade
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.model.response.HolderResponse
-import com.example.bancodigital.service.HolderService
 import io.swagger.annotations.Api
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -24,14 +23,13 @@ import javax.validation.Valid
 @RequestMapping("/holders")
 @Api(tags = ["Holder"])
 class HolderController(
-    val holderService: HolderService,
-    val publisher: ApplicationEventPublisher
+    val holderFacade: HolderFacade
 ) : HolderApi {
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = ["/findAll"], method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun findAll(): List<Holder> {
-        return holderService.findAll()
+        return holderFacade.findAll()
     }
 
     @RequestMapping(value = ["/save"], method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -39,12 +37,12 @@ class HolderController(
         @Valid @RequestBody holder: Holder,
         httpServletResponse: HttpServletResponse,
     ): ResponseEntity<Any> {
-        val validate = holderService.validateForCreate(holder)
+        val validate = holderFacade.validateForCreate(holder)
         return if(validate.isNotEmpty()){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
         } else {
-            val savedHolder = holderService.createHolder(holder)
-            publisher.publishEvent(CreateEvent(this, httpServletResponse, savedHolder.id))
+            val savedHolder = holderFacade.createHolder(holder)
+            holderFacade.publishEvent(CreateEvent(this, httpServletResponse, savedHolder.id))
             ResponseEntity.status(HttpStatus.CREATED).body(savedHolder)
         }
     }
@@ -53,7 +51,7 @@ class HolderController(
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun findById(@PathVariable id: Long): ResponseEntity<Optional<Holder>> {
-        val holder = holderService.findById(id)
+        val holder = holderFacade.findById(id)
         return if (!holder.isPresent) ResponseEntity.notFound().build() else ResponseEntity.ok(holder)
     }
 
@@ -61,7 +59,7 @@ class HolderController(
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun findByExternalKey(@PathVariable externalKey: String): ResponseEntity<Holder?> {
-        val holder = holderService.findByExternalKey(externalKey)
+        val holder = holderFacade.findByExternalKey(externalKey)
         return if (holder == null) ResponseEntity.notFound().build() else ResponseEntity.ok(holder)
     }
 
@@ -70,11 +68,11 @@ class HolderController(
         method = [RequestMethod.PUT],
         consumes = [MediaType.APPLICATION_JSON_VALUE])
     override fun update(@PathVariable id: Long, @RequestBody holderDTO: HolderDTO): ResponseEntity<Any> {
-        val validate = holderService.validateForUpdate(holderDTO)
+        val validate = holderFacade.validateForUpdate(holderDTO)
         return if(validate.isNotEmpty()){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
         } else {
-            val savedHolder = holderService.updateHolder(id, holderDTO)
+            val savedHolder = holderFacade.updateHolder(id, holderDTO)
             ResponseEntity.ok(HolderResponse.from(savedHolder))
         }
     }
@@ -87,7 +85,7 @@ class HolderController(
         @PathVariable id: Long,
         @PathVariable active: Boolean,
     ): ResponseEntity<String> {
-        holderService.updateActiveProperty(id, active)
+        holderFacade.updateActiveProperty(id, active)
         val info = "Holder id : $id updated property active for $active"
         return ResponseEntity.ok(info)
     }

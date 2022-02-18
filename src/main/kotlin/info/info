@@ -41,6 +41,9 @@ Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiZXhwIjoxNjQ0NjM0NzUxLCJpYXQiOjE2
 5 - Swagger -> Um "Documentador" / "Testador" da aplicação.
 6 - Junit -> Testes de lógica de uso da aplicação.
 7 - Qrcode - Usando a api da zxing gera um qrcode jpg para posterior consumo
+Obs: No controlador de qrcode da parte admin o primeiro endpoint que gera o qrcode é para testes,
+já o segundo é para ser usado em pagamentos que por sua vez serão usados no TransactionController e portanto
+será lido também neste contolador (Não confundir).
 8 - Barcode - Usando a api da zxing gera um barcode jpg para posterior consumo
 Obs: (UMA MELHORIA SERIA INCLUIR UM CAMPO DE PAGO OU LIQUIDADO...)
 -- ---------------------------------------------------------

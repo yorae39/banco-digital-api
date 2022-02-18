@@ -27,14 +27,14 @@ class TransactionService(
 
     fun transactionOfCredit(creditDTO: CreditDTO, externalKey: UUID): String {
         val savedAccount = accountRepository.findByExternalKey(externalKey)
-        return if (savedAccount != null) {
+        return if (savedAccount != null && savedAccount.active) {
             val credit = Account.operationOfCredit(creditDTO.value.toLong(), savedAccount)
             accountRepository.save(credit)
             val transaction = Transaction.operationOfCredit(creditDTO, savedAccount)
             transactionRepository.save(transaction)
             "Credit entered successfully : Actual Balance = ${credit.balance}, Description: ${creditDTO.description}"
         } else {
-            "Account not found"
+            "Account not found or inactive"
         }
     }
 
@@ -64,7 +64,7 @@ class TransactionService(
         debitDTO: DebitDTO,
         qrcodeExternalKey: String?,
     ): String {
-        return if (savedAccount != null) {
+        return if (savedAccount != null && savedAccount.active) {
             savedAccount.balance -= debitDTO.value.toLong()
             val debit = Account.operationOfDebit(savedAccount)
             accountRepository.save(debit)
@@ -73,7 +73,7 @@ class TransactionService(
             transactionRepository.save(transaction)
             return "Debit entered successfully : Actual Balance = ${debit.balance}, Description = ${debitDTO.description}"
         } else {
-            "Account not found"
+            "Account not found or inactive"
         }
     }
 
@@ -82,7 +82,7 @@ class TransactionService(
         creditDTO: CreditDTO,
         barcodeExternalKey: UUID
     ): String {
-        return if (savedAccount != null) {
+        return if (savedAccount != null && savedAccount.active) {
             savedAccount.balance += creditDTO.value.toLong()
             val credit = Account.operationOfCredit(savedAccount.balance, savedAccount)
             accountRepository.save(credit)
@@ -91,13 +91,13 @@ class TransactionService(
             transactionRepository.save(transaction)
             return "Credit entered successfully : Actual Balance = ${credit.balance}, Description = ${creditDTO.description}"
         } else {
-            "Account not found"
+            "Account not found or inactive"
         }
     }
 
     fun validationsForDebit(externalKey: UUID, value: BigDecimal): String {
         val savedAccount = accountRepository.findByExternalKey(externalKey)
-        return if (savedAccount != null) {
+        return if (savedAccount != null && savedAccount.active) {
             return if (savedAccount.balance < value.toLong() && savedAccount.accountType == AccountType.NORMAL) {
                 "Debit exceeds account balance limit"
             } else if (savedAccount.balance < -1000 && savedAccount.accountType == AccountType.VIP) {
@@ -106,7 +106,7 @@ class TransactionService(
                 ""
             }
         } else {
-            "Account not found in base"
+            "Account not found or inactive in base"
         }
     }
 
