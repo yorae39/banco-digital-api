@@ -11,11 +11,11 @@ class DebitByQrcodeDTO(
     val title: String = "",
 
     @NotBlank(message = "Qrcode external key")
-    @Size(max = 255, message = "Qrcode external key should not exceed more than 50 characters")
+    @Size(max = 255, message = "Qrcode external key should not exceed more than 255 characters")
     val externalKey: String = "",
 
     @NotBlank(message = "Account external key")
-    @Size(max = 255, message = "Account external key should not exceed more than 50 characters")
+    @Size(max = 255, message = "Account external key should not exceed more than 255 characters")
     val accountExternalKey: String = "",
 
     @NotBlank(message = "observation for payment")

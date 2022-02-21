@@ -10,11 +10,11 @@ class CreditByBarcode(
     var value: BigDecimal = BigDecimal(0),
 
     @NotBlank(message = "Barcode external key")
-    @Size(max = 255, message = "Barcode external key should not exceed more than 50 characters")
+    @Size(max = 255, message = "Barcode external key should not exceed more than 255 characters")
     var externalKey: String = "",
 
     @NotBlank(message = "Account external key")
-    @Size(max = 255, message = "Account external key should not exceed more than 50 characters")
+    @Size(max = 255, message = "Account external key should not exceed more than 255 characters")
     var accountExternalKey: String = "",
 
     var observation: String = "",

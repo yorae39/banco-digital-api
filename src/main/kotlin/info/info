@@ -44,6 +44,7 @@ Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiZXhwIjoxNjQ0NjM0NzUxLCJpYXQiOjE2
 Obs: No controlador de qrcode da parte admin o primeiro endpoint que gera o qrcode é para testes,
 já o segundo é para ser usado em pagamentos que por sua vez serão usados no TransactionController e portanto
 será lido também neste contolador (Não confundir).
+Aqui é um local (TransactionController) onde é possível também usar o SRP do conceito SOLID!
 8 - Barcode - Usando a api da zxing gera um barcode jpg para posterior consumo
 Obs: (UMA MELHORIA SERIA INCLUIR UM CAMPO DE PAGO OU LIQUIDADO...)
 -- ---------------------------------------------------------

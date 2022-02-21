@@ -1,6 +1,5 @@
 package com.example.bancodigital.service
 
-import com.example.bancodigital.dto.AccountDTO
 import com.example.bancodigital.model.Account
 import com.example.bancodigital.repository.AccountRepository
 import com.example.bancodigital.repository.HolderRepository
@@ -70,7 +69,7 @@ class AccountService(
     }
 
     fun checkAlreadyExistsAccountNumber(account: Account) {
-        val accountList = accountRepository.findAccountNumbersByExternalKey()
+        val accountList = accountRepository.findAccountNumbers()
         if (accountList.contains(account.accountNumber)) account.accountNumber = Account.randomAccountNumber()
     }
 }
