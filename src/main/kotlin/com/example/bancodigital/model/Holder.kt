@@ -2,9 +2,7 @@ package com.example.bancodigital.model
 
 import com.example.bancodigital.converter.LocalDateConverter
 import com.example.bancodigital.dto.HolderDTO
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonManagedReference
 import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 import java.time.LocalDate
@@ -12,12 +10,9 @@ import java.util.*
 import javax.persistence.Column
 import javax.persistence.Convert
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.OneToMany
-import javax.validation.constraints.NotNull
 
 @Entity
 @JsonIgnoreProperties(value = ["accounts"])

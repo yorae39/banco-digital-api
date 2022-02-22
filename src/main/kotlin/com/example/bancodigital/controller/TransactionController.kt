@@ -1,10 +1,13 @@
 package com.example.bancodigital.controller
 
+import com.example.bancodigital.dto.BankStatementDTO
 import com.example.bancodigital.dto.CreditDTO
 import com.example.bancodigital.dto.DebitDTO
 import com.example.bancodigital.facade.TransactionFacade
+import com.example.bancodigital.model.BankStatement
 import com.example.bancodigital.model.BarcodeRegister
 import com.example.bancodigital.model.Transaction
+import com.example.bancodigital.model.TransactionType
 import com.google.zxing.NotFoundException
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -27,7 +30,7 @@ import java.util.*
 @RequestMapping("/transactions")
 @Api(tags = ["Transaction"])
 class TransactionController(
-    val transactionFacade: TransactionFacade
+    val transactionFacade: TransactionFacade,
 ) : TransactionAPi {
 
     @RequestMapping(value = ["/findAll/{id}"],
@@ -72,7 +75,8 @@ class TransactionController(
         val debitByQrcodeDTO = transactionFacade.readForQrcodeTransaction(file)
 
         val validations =
-            transactionFacade.validationsForDebit(UUID.fromString(debitByQrcodeDTO.accountExternalKey), debitByQrcodeDTO.value)
+            transactionFacade.validationsForDebit(UUID.fromString(debitByQrcodeDTO.accountExternalKey),
+                debitByQrcodeDTO.value)
         return if (validations.isNotEmpty()) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(validations)
         } else {
@@ -80,7 +84,8 @@ class TransactionController(
         }
     }
 
-    @PutMapping(value = ["/register/barcode/{accountExternalKey}/{description}/{observation}"], consumes = ["multipart/form-data"])
+    @PutMapping(value = ["/register/barcode/{accountExternalKey}/{description}/{observation}"],
+        consumes = ["multipart/form-data"])
     @ResponseStatus(value = HttpStatus.OK)
     @ApiOperation(value = "returns decoded information inside provided Barcode for credit in Account")
     @Throws(
@@ -104,9 +109,9 @@ class TransactionController(
     @RequestMapping(value = ["/credit/barcode/{externalKey}"],
         method = [RequestMethod.POST],
         produces = [MediaType.ALL_VALUE])
-    @ApiOperation(value = "Consult barcode registered for credit in account with externalKey")
+    @ApiOperation(value = "Consult barcode registered for credit in account by barcode externalKey")
     fun consultBarcodeForCredit(
-        @PathVariable externalKey: String
+        @PathVariable externalKey: String,
     ): ResponseEntity<String> {
         val barcode = transactionFacade.findBarcode(externalKey)
         if (barcode != null) {
@@ -124,9 +129,42 @@ class TransactionController(
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiOperation(value = "Consult all barcodes registered for account with externalKey")
-    fun findBarcodeByAccount(@PathVariable accountExternalKey: String): ResponseEntity<List<BarcodeRegister>>  {
+    fun findBarcodeByAccount(@PathVariable accountExternalKey: String): ResponseEntity<List<BarcodeRegister>> {
         val barcodeRegister = transactionFacade.findBarcodeByAccount(accountExternalKey)
         return ResponseEntity.ok(barcodeRegister)
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = ["/generate/statement"],
+        method = [RequestMethod.GET],
+        produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiOperation(value = "Generate consult of statement by type")
+    fun statement(
+        accountExternalKey: String,
+        transactionType: TransactionType,
+        initialDate: String,
+        finalDate: String,
+        saveConsult: Boolean
+    ): ResponseEntity<List<Transaction>> {
+        val transactions = transactionFacade.generateStatement(UUID.fromString(accountExternalKey),
+            transactionType, initialDate, finalDate, saveConsult)
+        return ResponseEntity.ok(transactions)
+    }
+
+    @RequestMapping(value = ["/findAllStatement"],
+        method = [RequestMethod.GET],
+        produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiOperation(value = "Find all statements")
+    fun findAllStatements(): List<BankStatement> {
+        return transactionFacade.findAllStatements()
+    }
+
+    @RequestMapping(value = ["/findStatementByType/{externalKey}"],
+        method = [RequestMethod.GET],
+        produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiOperation(value = "Find saved statement by statement external key")
+    fun findStatementsByType(@PathVariable externalKey: UUID): ResponseEntity<List<BankStatementDTO>> {
+        return ResponseEntity.ok(transactionFacade.findStatementByExternalKey(externalKey))
     }
 
 }

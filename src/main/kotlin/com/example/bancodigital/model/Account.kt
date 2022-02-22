@@ -2,7 +2,6 @@ package com.example.bancodigital.model
 
 import com.example.bancodigital.converter.LocalDateConverter
 import com.example.bancodigital.util.Constants.Companion.MAX_ACCOUNT_NUMBER
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.annotations.Type
 import java.time.LocalDate
 import java.util.*
@@ -16,7 +15,6 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
 import kotlin.random.Random
 
 @Entity
@@ -44,8 +42,8 @@ data class Account(
     }
 
     companion object {
-        fun randomAccountNumber() =
-            Random.nextLong(MAX_ACCOUNT_NUMBER)
+
+        fun randomAccountNumber() = Random.nextLong(MAX_ACCOUNT_NUMBER)
 
         fun updateAccount(id: Long, account: Account, savedAccount: Optional<Account>) = Account(
             id = id,

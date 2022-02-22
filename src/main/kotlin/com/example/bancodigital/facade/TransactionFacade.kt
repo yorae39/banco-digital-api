@@ -1,11 +1,15 @@
 package com.example.bancodigital.facade
 
+import com.example.bancodigital.dto.BankStatementDTO
 import com.example.bancodigital.dto.CreditByBarcode
 import com.example.bancodigital.dto.CreditDTO
 import com.example.bancodigital.dto.DebitByQrcodeDTO
 import com.example.bancodigital.dto.DebitDTO
+import com.example.bancodigital.model.BankStatement
 import com.example.bancodigital.model.BarcodeRegister
 import com.example.bancodigital.model.Transaction
+import com.example.bancodigital.model.TransactionType
+import com.example.bancodigital.service.BankStatementService
 import com.example.bancodigital.service.BarcodeService
 import com.example.bancodigital.service.QrCodeService
 import com.example.bancodigital.service.TransactionService
@@ -21,6 +25,7 @@ class TransactionFacade(
     private val qrCodeService: QrCodeService,
     private val barcodeReader: BarcodeReader,
     private val barcodeService: BarcodeService,
+    private val bankStatementService: BankStatementService,
 ) {
 
     fun findTransactionsByAccount(id: Long): List<Transaction> {
@@ -69,5 +74,23 @@ class TransactionFacade(
 
     fun findBarcodeByAccount(accountExternalKey: String): List<BarcodeRegister>? {
         return barcodeService.findBarcodeByAccount(UUID.fromString(accountExternalKey))
+    }
+
+    fun generateStatement(
+        accountExternalKey: UUID,
+        transactionType: TransactionType,
+        initialDate: String,
+        finalDate: String,
+        saveConsult: Boolean
+    ): List<Transaction> {
+        return bankStatementService.generate(accountExternalKey, transactionType, initialDate, finalDate, saveConsult)
+    }
+
+    fun findAllStatements(): List<BankStatement>{
+        return bankStatementService.findAll()
+    }
+
+    fun findStatementByExternalKey(externalKey: UUID): List<BankStatementDTO> {
+        return bankStatementService.findStatement(externalKey)
     }
 }

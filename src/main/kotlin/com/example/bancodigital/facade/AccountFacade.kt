@@ -3,14 +3,12 @@ package com.example.bancodigital.facade
 import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.service.AccountService
-import com.example.bancodigital.service.HolderService
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
 class AccountFacade(
     private val accountService: AccountService,
-    private val holderService: HolderService
 ) {
 
     fun findAll(): List<Account> {
@@ -42,6 +40,6 @@ class AccountFacade(
     }
 
     fun savedHolderByExternalKey(externalKey: String): Holder? {
-        return holderService.findByExternalKey(externalKey)
+        return accountService.returnSaveHolder(UUID.fromString(externalKey))
     }
 }

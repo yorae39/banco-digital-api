@@ -1,6 +1,7 @@
 package com.example.bancodigital.service
 
 import com.example.bancodigital.model.Account
+import com.example.bancodigital.model.Holder
 import com.example.bancodigital.repository.AccountRepository
 import com.example.bancodigital.repository.HolderRepository
 import com.example.bancodigital.util.ValidateAccountType
@@ -20,7 +21,7 @@ class AccountService(
 
     fun createAccount(account: Account): Account {
         val holder = account.holder.id.let { holderRepository.findById(it) }
-        val savedHolder = holderRepository.findByExternalKey(holder.get().externalKey)
+        val savedHolder = returnSaveHolder(holder.get().externalKey)
         account.holder = savedHolder!!
         account.accountType = validateAccountType.returnMonthOfBirthDate(account.holder.birthDate)
         checkAlreadyExistsAccountNumber(account)
@@ -71,5 +72,9 @@ class AccountService(
     fun checkAlreadyExistsAccountNumber(account: Account) {
         val accountList = accountRepository.findAccountNumbers()
         if (accountList.contains(account.accountNumber)) account.accountNumber = Account.randomAccountNumber()
+    }
+
+    fun returnSaveHolder(externalKey: UUID): Holder? {
+        return holderRepository.findByExternalKey(externalKey)
     }
 }
