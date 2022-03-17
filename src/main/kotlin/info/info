@@ -31,27 +31,32 @@ onde cada versão será executada e validada (Usando o comando spring.jpa.hibern
 no application.properties) onde a aplicação só será executado se todas as migrations forem validadas.
 Obs: Uma forma mais rápida de executar uma alteração nas migrations (projeto local) é deletar todas as tabelas no mysql
 após todos os ajustes nas migrations e recriar as mesmas ao subir a aplicação.
+-- ----------------------------------------------------------
 2 - Spring-Security -> Implementa as regaras de acesso ao sistema.
 3 - JWT -> Json Web Token. Tecnologira para autenticação por meio de token.
 Obs: Usa o token no pop-up com o Bearer no inicio espaço e o token gerado dentro de caixa de consulta.
 Ex:
 Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyIiwiZXhwIjoxNjQ0NjM0NzUxLCJpYXQiOjE2NDQ2MzQ0MzN9.8grPMeGKi_w7Oe_hedt7NotuxiBkXspC-7TyynQhxB59-biJU_gQu1MQruzPITihpvw70a4hVOSuneAmHemJtA
 -- ---------------------------------------------------------
+$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6 = password
+SITE PARA TESTAR A CRIPTOGRAFIA:
+https://bcrypt-generator.com/
+-- ---------------------------------------------------------
 4 - JPA -> Java Persistence Api.
 5 - Swagger -> Um "Documentador" / "Testador" da aplicação.
 6 - Junit -> Testes de lógica de uso da aplicação.
 7 - Qrcode - Usando a api da zxing gera um qrcode jpg para posterior consumo
+-- ---------------------------------------------------------
 Obs: No controlador de qrcode da parte admin o primeiro endpoint que gera o qrcode é para testes,
 já o segundo é para ser usado em pagamentos que por sua vez serão usados no TransactionController e portanto
 será lido também neste contolador (Não confundir).
 Aqui é um local (TransactionController) onde é possível também usar o SRP do conceito SOLID!
+-- ---------------------------------------------------------
 8 - Barcode - Usando a api da zxing gera um barcode jpg para posterior consumo
 Obs: (UMA MELHORIA SERIA INCLUIR UM CAMPO DE PAGO OU LIQUIDADO...)
 -- ---------------------------------------------------------
+9 - log4j2 - Inclusão de logs na aplicação com prepração para possível Graylog
+Obs: Exemplos de configuração de pattern do log4j:
+https://howtodoinjava.com/log4j2/useful-conversion-pattern-examples/
+-- ---------------------------------------------------------
 http://localhost:8080/swagger-ui.html
-
-$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6 = password
-
-SITE PARA TESTAR A CRIPTOGRAFIA:
-https://bcrypt-generator.com/
--- -----------------------------------------------------------

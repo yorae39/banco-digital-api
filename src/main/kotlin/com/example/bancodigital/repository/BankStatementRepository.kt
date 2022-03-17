@@ -9,7 +9,7 @@ import java.util.UUID
 interface BankStatementRepository : JpaRepository<BankStatement, Long> {
     @Query("SELECT new com.example.bancodigital.dto.BankStatementDTO(t.description, t.value, bs.initialDate, " +
             " bs.finalDate, bs.accountExternalKey, bs.transactionType) " +
-            " from Transaction t, BankStatementTransaction bst, BankStatement bs where bs.externalKey = ?1 " +
-            " and bst.bankStatementId = bs.id and bst.transactionId = t.id")
+            " FROM Transaction t, BankStatementTransaction bst, BankStatement bs WHERE bs.externalKey = ?1 " +
+            " AND bst.bankStatementId = bs.id AND bst.transactionId = t.id")
     fun findSavedStatement(externalKey: UUID): List<BankStatementDTO>
 }

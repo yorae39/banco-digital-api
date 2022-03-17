@@ -63,6 +63,8 @@ dependencies {
     implementation("org.flywaydb:flyway-maven-plugin:8.4.4")
     // https://mvnrepository.com/artifact/net.sourceforge.barbecue/barbecue
     implementation("net.sourceforge.barbecue:barbecue:1.5-beta1")
+    // https://mvnrepository.com/artifact/org.graylog2/gelfj
+    implementation("org.graylog2:gelfj:1.1.16")
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly("org.projectlombok:lombok:1.18.22")
 
