@@ -1,69 +1,69 @@
 package com.example.bancodigital.config
 
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Contact
+import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.info.License
+import io.swagger.v3.oas.models.security.SecurityRequirement
+import io.swagger.v3.oas.models.security.SecurityScheme
+import org.springdoc.core.models.GroupedOpenApi // Import correto para Spring Boot 3 / Springdoc v2
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import springfox.documentation.builders.PathSelectors
-import springfox.documentation.builders.RequestHandlerSelectors
-import springfox.documentation.service.ApiInfo
-import springfox.documentation.service.ApiKey
-import springfox.documentation.service.AuthorizationScope
-import springfox.documentation.service.Contact
-import springfox.documentation.service.SecurityReference
-import springfox.documentation.service.SecurityScheme
-import springfox.documentation.spi.DocumentationType
-import springfox.documentation.spi.service.contexts.SecurityContext
-import springfox.documentation.spring.web.plugins.Docket
-import springfox.documentation.swagger2.annotations.EnableSwagger2
 
 @Configuration
-@EnableSwagger2
 class SwaggerConfig {
 
-    private val BEARER_AUTH = "Bearer"
+    private val bearerAuth = "bearerAuth"
 
     @Bean
-    fun api(): Docket {
-        return Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.example.bancodigital.controller"))
-            .paths(PathSelectors.any()).build().apiInfo(apiInfo()).groupName("public")
-            .securitySchemes(securitySchemes()).securityContexts(addSecurityPaths())
-    }
-
-    @Bean
-    fun adminApi(): Docket =
-        Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(apiInfo())
-            .groupName("admin")
-            .select()
-            .apis(RequestHandlerSelectors.basePackage("com.example.bancodigital.admin"))
-            .paths(PathSelectors.regex("/internal.*"))
+    fun publicApi(): GroupedOpenApi {
+        return GroupedOpenApi.builder()
+            .group("public")
+            .packagesToScan("com.example.bancodigital.controller")
+            .pathsToMatch("/**")
             .build()
-
-    fun apiInfo(): ApiInfo {
-        return ApiInfo("DIGITAL BANK WEB REST API", "Product API to perform CRUD operations",
-            "1.0", "Terms of service",
-            Contact("Luiz Paulo Aureliano", "", "lpaureliano74@gmail.com"),
-            "License of API", "API license URL", emptyList())
     }
 
-    private fun securitySchemes(): List<SecurityScheme> {
-        return listOf<SecurityScheme>(ApiKey(BEARER_AUTH,"Authorization", "header"))
+    @Bean
+    fun adminApi(): GroupedOpenApi {
+        return GroupedOpenApi.builder()
+            .group("admin")
+            .packagesToScan("com.example.bancodigital.admin")
+            .pathsToMatch("/internal/**")
+            .build()
     }
 
-    private fun addSecurityPaths(): List<SecurityContext> {
-        val securityOne = SecurityContext.builder().securityReferences(listOf(bearerAuthReference()))
-            .forPaths(PathSelectors.ant("/holders/**")).build()
-        val securityTwo = SecurityContext.builder().securityReferences(listOf(bearerAuthReference()))
-            .forPaths(PathSelectors.ant("/accounts/**")).build()
-        val securityThree = SecurityContext.builder().securityReferences(listOf(bearerAuthReference()))
-            .forPaths(PathSelectors.ant("/address/**")).build()
-        val securityFour = SecurityContext.builder().securityReferences(listOf(bearerAuthReference()))
-            .forPaths(PathSelectors.ant("/transactions/**")).build()
-        return listOf(securityOne, securityTwo, securityThree, securityFour)
+    @Bean
+    fun customOpenAPI(): OpenAPI {
+        return OpenAPI()
+            .info(
+                Info()
+                    .title("DIGITAL BANK WEB REST API")
+                    .description("Product API to perform CRUD operations")
+                    .version("1.0")
+                    .termsOfService("Terms of service")
+                    .contact(
+                        Contact()
+                            .name("Luiz Paulo Aureliano")
+                            .email("lpaureliano74@gmail.com")
+                    )
+                    .license(
+                        License()
+                            .name("License of API")
+                            .url("API license URL")
+                    )
+            )
+            .addSecurityItem(SecurityRequirement().addList(bearerAuth))
+            .components(
+                Components().addSecuritySchemes(
+                    bearerAuth,
+                    SecurityScheme()
+                        .name("Authorization")
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                )
+            )
     }
-
-    private fun bearerAuthReference(): SecurityReference {
-        val authorizationScopes: Array<AuthorizationScope?> = arrayOfNulls(0)
-        return SecurityReference(BEARER_AUTH, authorizationScopes)
-    }
-
 }

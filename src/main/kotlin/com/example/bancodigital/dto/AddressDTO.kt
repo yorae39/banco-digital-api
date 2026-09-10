@@ -10,7 +10,7 @@ class AddressDTO(
     val neighborhood: String,
     val zipCode: String,
     val city: String,
-    val country: String
+    val state: String
 ) {
     companion object {
         fun from(addressDTO: AddressDTO, holder: Holder) = Address(
@@ -20,7 +20,7 @@ class AddressDTO(
             neighborhood = addressDTO.neighborhood,
             zipCode = addressDTO.zipCode,
             city = addressDTO.city,
-            country = addressDTO.country,
+            state = addressDTO.state,
             info = "Address created for holder: ${holder.name}",
             holder = holder
         )

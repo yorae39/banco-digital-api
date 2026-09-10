@@ -1,7 +1,7 @@
 package com.example.bancodigital.event
 
 import org.springframework.context.ApplicationEvent
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
 class CreateEvent(source: Any?, val httpServletResponse: HttpServletResponse, val id: Long) :
     ApplicationEvent(source!!) {

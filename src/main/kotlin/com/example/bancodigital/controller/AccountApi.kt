@@ -2,38 +2,55 @@ package com.example.bancodigital.controller
 
 import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.response.AccountResponse
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import java.util.*
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
-@Api
+@Tag(name = "Account API", description = "Operações relacionadas a contas")
 interface AccountApi {
 
-    @ApiOperation(value = "Get list of accounts in the System ", response = Iterable::class)
+    @Operation(summary = "Get list of accounts in the System")
     @ApiResponses(value = [
-        ApiResponse(code = 200, message = "Success"),
-        ApiResponse(code = 401, message = "Not authorized!"),
-        ApiResponse(code = 403, message = "Forbidden!"),
-        ApiResponse(code = 404, message = "Not found!")
+        ApiResponse(responseCode = "200", description = "Success"),
+        ApiResponse(responseCode = "401", description = "Not authorized!", content = [Content()]),
+        ApiResponse(responseCode = "403", description = "Forbidden!", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "Not found!", content = [Content()])
     ])
     fun findAll(): List<Account>
 
-    @ApiOperation(value = "Create account", response = String::class)
+    @Operation(
+        summary = "Create account",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = String::class))])]
+    )
     fun createAccount(holderExternalKey: UUID, httpServletResponse: HttpServletResponse): ResponseEntity<Any>
 
-    @ApiOperation(value = "Get account by id", response = Account::class)
+    @Operation(
+        summary = "Get account by id",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Account::class))])]
+    )
     fun findById(id: Long): ResponseEntity<Optional<Account>>
 
-    @ApiOperation(value = "Get account by externalKey", response = Account::class)
+    @Operation(
+        summary = "Get account by externalKey",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = AccountResponse::class))])]
+    )
     fun findByExternalKey(externalKey: String): ResponseEntity<AccountResponse>
 
-    @ApiOperation(value = "Update account by account id", response = Account::class)
+    @Operation(
+        summary = "Update account by account id",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Account::class))])]
+    )
     fun transferAccountOtherHolder(id: Long, holderExternalKey: UUID): ResponseEntity<Any>
 
-    @ApiOperation(value = "Update active property status from by account id", response = Account::class)
+    @Operation(
+        summary = "Update active property status from by account id",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Account::class))])]
+    )
     fun updateActiveProperty(id: Long, active: Boolean): ResponseEntity<String>
 }

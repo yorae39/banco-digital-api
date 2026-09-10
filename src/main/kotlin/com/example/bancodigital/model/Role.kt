@@ -1,27 +1,34 @@
 package com.example.bancodigital.model
 
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.ManyToMany
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.ManyToMany
+import jakarta.persistence.Table
 
 @Entity
-data class Role(
+@Table(name = "role")
+class Role(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
-    @ManyToMany(mappedBy = "roles")
-    val users: Set<User>,
+    val id: Long = 0,
+
     @Enumerated(EnumType.STRING)
-    val roleType: RoleType
+    val roleType: RoleType,
 ) {
     override fun equals(other: Any?): Boolean {
-        val otherObject = other as? Role ?: return false
-        return otherObject.id == id && otherObject.roleType == roleType
+        if (this === other) return true
+        if (other !is Role) return false
+        return id != 0L && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode() * 31 + roleType.hashCode()
+    override fun hashCode(): Int = javaClass.hashCode()
+
+    // Sobrescreve o toString SEM incluir a lista de usuários
+    override fun toString(): String {
+        return "Role(id=$id, roleType=$roleType)"
+    }
 }

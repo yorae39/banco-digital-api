@@ -11,13 +11,13 @@ class AddressResponse(
     val neighborhood: String,
     val zipCode: String,
     val city: String,
-    val country: String,
+    val state: String,
     val info: String,
     val holder: Holder
 ) {
     override fun toString(): String {
         return "AddressResponse(street=$street, number=$number, complement=$complement, neighborhood=$neighborhood, " +
-                "zipCode=$zipCode, city=$city, country=$country, info=$info)"
+                "zipCode=$zipCode, city=$city, state=$state, info=$info)"
     }
     companion object {
 
@@ -28,7 +28,7 @@ class AddressResponse(
                 neighborhood = address.neighborhood,
                 zipCode = address.zipCode,
                 city = address.city,
-                country = address.country,
+                state = address.state,
                 info = address.info,
                 holder = address.holder
             )

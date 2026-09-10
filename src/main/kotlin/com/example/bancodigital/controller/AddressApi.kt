@@ -1,38 +1,44 @@
 package com.example.bancodigital.controller
 
 import com.example.bancodigital.dto.AddressDTO
-import com.example.bancodigital.dto.HolderDTO
-import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.Address
-import com.example.bancodigital.model.Holder
-import com.example.bancodigital.model.response.AccountResponse
-import com.example.bancodigital.model.response.AddressResponse
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import java.util.*
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
-@Api
+@Tag(name = "Address API", description = "Operações relacionadas a endereços")
 interface AddressApi {
 
-    @ApiOperation(value = "Get list of address in the System ", response = Iterable::class)
+    @Operation(summary = "Get list of address in the System")
     @ApiResponses(value = [
-        ApiResponse(code = 200, message = "Success"),
-        ApiResponse(code = 401, message = "Not authorized!"),
-        ApiResponse(code = 403, message = "Forbidden!"),
-        ApiResponse(code = 404, message = "Not found!")
+        ApiResponse(responseCode = "200", description = "Success"),
+        ApiResponse(responseCode = "401", description = "Not authorized!", content = [Content()]),
+        ApiResponse(responseCode = "403", description = "Forbidden!", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "Not found!", content = [Content()])
     ])
     fun findAll(): List<Address>
 
-    @ApiOperation(value = "Create account", response = String::class)
+    @Operation(
+        summary = "Create account",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = String::class))])]
+    )
     fun createAddress(holderExternalKey: UUID, addressDTO: AddressDTO, httpServletResponse: HttpServletResponse): ResponseEntity<Any>
 
-    @ApiOperation(value = "Get address by id", response = Address::class)
+    @Operation(
+        summary = "Get address by id",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Address::class))])]
+    )
     fun findById(id: Long): ResponseEntity<Optional<Address>>
 
-    @ApiOperation(value = "Update address by address id", response = Address::class)
+    @Operation(
+        summary = "Update address by address id",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Address::class))])]
+    )
     fun update(id: Long, addressDTO: AddressDTO): ResponseEntity<Any>
 }

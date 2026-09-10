@@ -1,21 +1,16 @@
 package com.example.bancodigital.model
 
-import com.example.bancodigital.converter.LocalDateConverter
 import com.example.bancodigital.dto.AddressDTO
-import com.example.bancodigital.dto.HolderDTO
-import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDate
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Convert
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 
 @Entity
 data class Address(
@@ -28,8 +23,7 @@ data class Address(
     val neighborhood: String,
     val zipCode: String,
     val city: String,
-    val country: String,
-    @Convert(converter = LocalDateConverter::class)
+    val state: String,
     @Column(nullable = true)
     var dateCreation: LocalDate = LocalDate.now(),
     @JsonIgnore
@@ -49,12 +43,11 @@ data class Address(
             neighborhood = addressDTO.neighborhood,
             zipCode = addressDTO.zipCode,
             city = addressDTO.city,
-            country = addressDTO.country,
+            state = addressDTO.state,
             dateCreation = savedAddress.get().dateCreation,
             info = "Address updated in ${LocalDate.now()}",
             holder = savedAddress.get().holder
         )
     }
-
 
 }

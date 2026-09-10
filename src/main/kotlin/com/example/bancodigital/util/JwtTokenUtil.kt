@@ -2,27 +2,33 @@ package com.example.bancodigital.util
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
+import java.nio.charset.StandardCharsets
 import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.function.Function
+import javax.crypto.SecretKey
 
 @Component
 class JwtTokenUtil {
-    val JWT_TOKEN_VALIDITY = (5 * 60 * 60).toLong()
+
+    // 5 horas em milissegundos (5 * 60 * 60 * 1000)
+    val JWT_TOKEN_VALIDITY: Long = 5 * 60 * 60 * 1000
 
     @Value("\${jwt.secret}")
-    private val secret: String? = null
+    private lateinit var secret: String
 
-    // recupera o nome de usuário do token jwt
+    // Helper privado para obter a SecretKey formatada no padrão 0.12.x
+    private fun getSigningKey(): SecretKey {
+        return Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
+    }
+
     fun getUsernameFromToken(token: String?): String {
         return getClaimFromToken(token) { obj: Claims -> obj.subject }
     }
 
-    // recupera a data de expiração do token jwt
     fun getExpirationDateFromToken(token: String?): Date {
         return getClaimFromToken(token) { obj: Claims -> obj.expiration }
     }
@@ -32,37 +38,36 @@ class JwtTokenUtil {
         return claimsResolver.apply(claims)
     }
 
-    // para recuperar qualquer informação do token, precisaremos da chave secreta
     fun getAllClaimsFromToken(token: String?): Claims {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).body
+        return Jwts.parser()
+            .verifyWith(getSigningKey())
+            .build()
+            .parseSignedClaims(token)
+            .payload
     }
 
-    // verifica se o token expirou
     private fun isTokenExpired(token: String?): Boolean {
         val expiration = getExpirationDateFromToken(token)
         return expiration.before(Date())
     }
 
-    // gera token para usuário
     fun generateToken(userDetails: UserDetails): String {
         val claims: Map<String, Any> = HashMap()
         return doGenerateToken(claims, userDetails.username)
     }
 
-    // Ao criar o token -
-    // 1. Defina as declarações do token, como Emissor, Expiração, Assunto e o ID
-    // 2. Assine o JWT usando o algoritmo HS512 e a chave secreta.
-    // 3. De acordo com o JWS Compact
-    // Serialização(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
-    // compactação do JWT para uma string segura para URL
     private fun doGenerateToken(claims: Map<String, Any>, subject: String): String {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(Date(System.currentTimeMillis() + JwtTokenUtil().JWT_TOKEN_VALIDITY + TimeUnit.MINUTES.toMillis(
-                5)))
-            .signWith(SignatureAlgorithm.HS512, secret).compact()
+        val now = System.currentTimeMillis()
+
+        return Jwts.builder()
+            .claims(claims)
+            .subject(subject)
+            .issuedAt(Date(now))
+            .expiration(Date(now + JWT_TOKEN_VALIDITY))
+            .signWith(getSigningKey()) // Usa a nova assinatura com a SecretKey segura
+            .compact()
     }
 
-    //validar token
     fun validateToken(token: String?, userDetails: UserDetails): Boolean {
         val username = getUsernameFromToken(token)
         return username == userDetails.username && !isTokenExpired(token)

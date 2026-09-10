@@ -1,18 +1,21 @@
+// import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.6.3"
+    id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.spring") version "1.6.10"
-    kotlin("plugin.jpa") version "1.6.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.20"
+    kotlin("jvm") version "2.3.20"
+    kotlin("plugin.spring") version "2.3.20"
+    kotlin("plugin.jpa") version "2.3.20"
+    kotlin("plugin.lombok") version "2.3.20"
 
 }
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_11
+// java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
@@ -23,62 +26,63 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
-    implementation("org.springframework.boot:spring-boot-starter-validation:2.6.3")
     // https://mvnrepository.com/artifact/org.json/json
     implementation("org.json:json:20211205")
     // https://mvnrepository.com/artifact/com.google.zxing/core
     implementation("com.google.zxing:core:3.4.1")
     // https://mvnrepository.com/artifact/com.google.zxing/javase
     implementation("com.google.zxing:javase:3.4.1")
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-configuration-processor
-    implementation("org.springframework.boot:spring-boot-configuration-processor:2.6.3")
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
-    implementation("org.springframework.boot:spring-boot-devtools:2.6.3")
-    // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-    implementation("org.flywaydb:flyway-core:7.1.1")
-    // https://mvnrepository.com/artifact/org.flywaydb/flyway-maven-plugin
-    implementation("org.flywaydb:flyway-maven-plugin:7.1.1")
-    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
-    implementation("io.springfox:springfox-swagger2:2.9.2")
-    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
-    implementation("io.springfox:springfox-swagger-ui:2.9.2")
-    // https://mvnrepository.com/artifact/io.springfox/springfox-bean-validators
-    implementation("io.springfox:springfox-bean-validators:2.9.2")
-    // https://mvnrepository.com/artifact/org.hibernate/hibernate-java8
-    implementation("org.hibernate:hibernate-java8:5.6.5.Final")
+    //flyway
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.flywaydb:flyway-mysql")
+    //implementation("io.springfox:springfox-bean-validators:2.9.2")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+    // Kotlin DSL
+    implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    // token
+    implementation("io.jsonwebtoken:jjwt-api:0.12.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
     // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
-    implementation("io.jsonwebtoken:jjwt:0.9.1")
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
-    implementation("org.springframework.boot:spring-boot-starter-security:2.6.3")
-    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-    implementation("mysql:mysql-connector-java:8.0.28")
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin
-    implementation("org.springframework.boot:spring-boot-maven-plugin:2.6.3")
-    // https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin
-    implementation("org.apache.maven.plugins:maven-compiler-plugin:3.9.0")
-    // https://mvnrepository.com/artifact/org.flywaydb/flyway-maven-plugin
-    implementation("org.flywaydb:flyway-maven-plugin:8.4.4")
+    //implementation("io.jsonwebtoken:jjwt:0.9.1")
+    //validator - processor - security
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    // Source: https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    runtimeOnly("com.mysql:mysql-connector-j")
     // https://mvnrepository.com/artifact/net.sourceforge.barbecue/barbecue
     implementation("net.sourceforge.barbecue:barbecue:1.5-beta1")
     // https://mvnrepository.com/artifact/org.graylog2/gelfj
     implementation("org.graylog2:gelfj:1.1.16")
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly("org.projectlombok:lombok:1.18.22")
+    // Remove a versão fixa para usar o gerenciamento do Spring Boot
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation(kotlin("test"))
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.compilerOptions {
+    freeCompilerArgs.set(listOf("-Xannotation-default-target=param-property"))
 }

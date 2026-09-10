@@ -4,16 +4,18 @@ import com.example.bancodigital.dto.BarcodeInfoDTO
 import com.example.bancodigital.util.BarcodeReader
 import com.example.bancodigital.util.BarcodesZxingGenerator
 import com.google.zxing.NotFoundException
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.ALL_VALUE
+import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -22,10 +24,9 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-
 @RestController
 @RequestMapping("/internal/barcode")
-@Api(tags = ["Barcode Generator and Reader"])
+@Tag(name = "Barcode Generator and Reader")
 class BarCodesController(
     val barcodesZxingGenerator: BarcodesZxingGenerator,
     val barcodeReader: BarcodeReader
@@ -33,7 +34,7 @@ class BarCodesController(
 
     @PostMapping(value = ["/generate/{barcodeText}"], produces = [ALL_VALUE])
     @ResponseStatus(value = HttpStatus.OK)
-    @ApiOperation(value = "Returns a .png Barcode code with provided information decoded inside")
+    @Operation(summary = "Returns a .png Barcode code with provided information decoded inside")
     fun generate(
         @PathVariable("barcodeText") barcodeText: String,
     ): ResponseEntity<String> {
@@ -41,15 +42,16 @@ class BarCodesController(
         return ResponseEntity.ok(resp.body.toString())
     }
 
-    @PutMapping(value = ["/read"], consumes = ["multipart/form-data"])
+    @PutMapping(value = ["/read"], consumes = [MULTIPART_FORM_DATA_VALUE])
     @ResponseStatus(value = HttpStatus.OK)
-    @ApiOperation(value = "returns decoded information inside provided barcode")
+    @Operation(summary = "returns decoded information inside provided barcode")
     @Throws(
         IOException::class,
-        NotFoundException::class)
+        NotFoundException::class
+    )
     fun read(
-        @RequestParam(value = "Barcode for read",
-            required = true) file: MultipartFile,
+        @Parameter(description = "Barcode for read", required = true)
+        @RequestPart("file") file: MultipartFile,
     ): ResponseEntity<BarcodeInfoDTO> {
         return ResponseEntity.ok(barcodeReader.decodeImage(file))
     }

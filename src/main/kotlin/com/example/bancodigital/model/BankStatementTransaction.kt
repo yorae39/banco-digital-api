@@ -1,10 +1,11 @@
 package com.example.bancodigital.model
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 
+/*
 @Entity
 data class BankStatementTransaction(
     @Id
@@ -12,4 +13,4 @@ data class BankStatementTransaction(
     val id: Long? = null,
     val transactionId: Long,
     val bankStatementId: Long
-)
+)*/

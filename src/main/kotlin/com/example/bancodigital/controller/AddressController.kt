@@ -4,7 +4,7 @@ import com.example.bancodigital.dto.AddressDTO
 import com.example.bancodigital.facade.AddressFacade
 import com.example.bancodigital.model.Address
 import com.example.bancodigital.model.response.AddressResponse
-import io.swagger.annotations.Api
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
-import javax.servlet.http.HttpServletResponse
-import javax.validation.Valid
+import jakarta.servlet.http.HttpServletResponse
+import jakarta.validation.Valid
 
 @RestController
 @RequestMapping("/address")
-@Api(tags = ["Address"])
+@Tag(name = "Address")
 class AddressController(
     val addressFacade: AddressFacade
 ) : AddressApi {

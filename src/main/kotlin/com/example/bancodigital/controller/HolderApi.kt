@@ -2,43 +2,55 @@ package com.example.bancodigital.controller
 
 import com.example.bancodigital.dto.HolderDTO
 import com.example.bancodigital.model.Holder
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import java.util.Optional
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
-@Api
+@Tag(name = "Holder API", description = "Operações relacionadas a titulares de conta")
 interface HolderApi {
 
-    @ApiOperation(value = "Get list of holders in the System ", response = Iterable::class)
+    @Operation(summary = "Get list of holders in the System")
     @ApiResponses(value = [
-        ApiResponse(code = 200, message = "Success"),
-        ApiResponse(code = 401, message = "Not authorized!"),
-        ApiResponse(code = 403, message = "Forbidden!"),
-        ApiResponse(code = 404, message = "Not found!")
+        ApiResponse(responseCode = "200", description = "Success"),
+        ApiResponse(responseCode = "401", description = "Not authorized!", content = [Content()]),
+        ApiResponse(responseCode = "403", description = "Forbidden!", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "Not found!", content = [Content()])
     ])
     fun findAll(): List<Holder>
 
-    @ApiOperation(value = "Create holder", response = String::class)
+    @Operation(
+        summary = "Create holder",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = String::class))])]
+    )
     fun createHolder(holder: Holder, httpServletResponse: HttpServletResponse): ResponseEntity<Any>
 
-    @ApiOperation(value = "Get holder by id", response = Holder::class)
+    @Operation(
+        summary = "Get holder by id",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Holder::class))])]
+    )
     fun findById(id: Long): ResponseEntity<Optional<Holder>>
 
-    @ApiOperation(value = "Get holder by externalKey", response = Holder::class)
-    fun findByExternalKey(externalKey: String): ResponseEntity<Holder?>
+    @Operation(
+        summary = "Get holder by externalKey",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Holder::class))])]
+    )
+    fun findByExternalKey(externalKey: String): ResponseEntity<Holder>
 
-    @ApiOperation(value = "Update holder by holder id", response = Holder::class)
+    @Operation(
+        summary = "Update holder by holder id",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Holder::class))])]
+    )
     fun update(id: Long, holderDTO: HolderDTO): ResponseEntity<Any>
 
-    @ApiOperation(value = "Update active property status from by holder id", response = Holder::class)
+    @Operation(
+        summary = "Update active property status from by holder id",
+        responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Holder::class))])]
+    )
     fun updateActiveProperty(id: Long, active: Boolean): ResponseEntity<String>
-
-    //ALTERADO PARA USAR EXCLUSÃO LÓGICA ACIMA
-    /*@ApiOperation(value = "Delete holder by holder id", response = String::class)
-    fun delete(id: Long): ResponseEntity<String>*/
-
 }

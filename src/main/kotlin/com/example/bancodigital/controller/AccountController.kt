@@ -4,7 +4,7 @@ import com.example.bancodigital.dto.AccountDTO
 import com.example.bancodigital.facade.AccountFacade
 import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.response.AccountResponse
-import io.swagger.annotations.Api
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/accounts")
-@Api(tags = ["Account"])
+@Tag(name = "Account")
 class AccountController(
     val accountFacade: AccountFacade
 ) : AccountApi {

@@ -1,8 +1,8 @@
 package com.example.bancodigital.dto
 
 import java.math.BigDecimal
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Size
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 
 class CreditByBarcode(
 

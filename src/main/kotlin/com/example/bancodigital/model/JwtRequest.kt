@@ -1,10 +1,11 @@
 package com.example.bancodigital.model
 
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 data class JwtRequest(
-    @ApiModelProperty(example = "user")
+    @field:Schema(example = "user")
     val username: String,
-    @ApiModelProperty(example = "password")
+
+    @field:Schema(example = "password")
     val password: String
 )

@@ -6,20 +6,22 @@ import com.example.bancodigital.dto.DebitDTO
 import com.example.bancodigital.facade.TransactionFacade
 import com.example.bancodigital.model.BankStatement
 import com.example.bancodigital.model.BarcodeRegister
-import com.example.bancodigital.model.Transaction
+import com.example.bancodigital.model.Transactions
 import com.example.bancodigital.model.TransactionType
 import com.google.zxing.NotFoundException
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -28,7 +30,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/transactions")
-@Api(tags = ["Transaction"])
+@Tag(name = "Transaction")
 class TransactionController(
     val transactionFacade: TransactionFacade,
 ) : TransactionAPi {
@@ -36,7 +38,7 @@ class TransactionController(
     @RequestMapping(value = ["/findAll/{id}"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
-    override fun findTransactionsByAccount(@PathVariable id: Long): List<Transaction> {
+    override fun findTransactionsByAccount(@PathVariable id: Long): List<Transactions> {
         return transactionFacade.findTransactionsByAccount(id)
     }
 
@@ -48,6 +50,17 @@ class TransactionController(
         @PathVariable externalKey: UUID,
     ): ResponseEntity<String> {
         val result = transactionFacade.transactionOfCredit(creditDTO, externalKey)
+        return ResponseEntity.ok(result)
+    }
+
+    @RequestMapping(value = ["/credit/scheduled/{externalKey}"],
+        method = [RequestMethod.POST],
+        produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun scheduledCredit(
+        @RequestBody creditDTO: CreditDTO,
+        @PathVariable externalKey: UUID,
+    ): ResponseEntity<String> {
+        val result = transactionFacade.transactionOfCreditScheduling(creditDTO, externalKey)
         return ResponseEntity.ok(result)
     }
 
@@ -63,14 +76,15 @@ class TransactionController(
         }
     }
 
-    @PutMapping(value = ["/read/qrcode"], consumes = ["multipart/form-data"])
+    @PutMapping(value = ["/read/qrcode"], consumes = [MULTIPART_FORM_DATA_VALUE])
     @ResponseStatus(value = HttpStatus.OK)
-    @ApiOperation(value = "returns decoded information inside provided QR code")
+    @Operation(summary = "returns decoded information inside provided QR code")
     @Throws(
         IOException::class,
         NotFoundException::class)
     fun readQrcode(
-        @RequestParam(value = "Qr-code for read for debit", required = true) file: MultipartFile,
+        @Parameter(description = "Qr-code for read for debit", required = true)
+        @RequestPart("file") file: MultipartFile,
     ): ResponseEntity<Any> {
         val debitByQrcodeDTO = transactionFacade.readForQrcodeTransaction(file)
 
@@ -85,9 +99,9 @@ class TransactionController(
     }
 
     @PutMapping(value = ["/register/barcode/{accountExternalKey}/{description}/{observation}"],
-        consumes = ["multipart/form-data"])
+        consumes = [MULTIPART_FORM_DATA_VALUE])
     @ResponseStatus(value = HttpStatus.OK)
-    @ApiOperation(value = "returns decoded information inside provided Barcode for credit in Account")
+    @Operation(summary = "returns decoded information inside provided Barcode for credit in Account")
     @Throws(
         IOException::class,
         NotFoundException::class)
@@ -95,7 +109,8 @@ class TransactionController(
         @PathVariable accountExternalKey: String,
         @PathVariable description: String,
         @PathVariable observation: String,
-        @RequestParam(value = "Barcode read for credit", required = true) file: MultipartFile,
+        @Parameter(description = "Barcode read for credit", required = true)
+        @RequestPart("file") file: MultipartFile,
     ): ResponseEntity<BarcodeRegister> {
         val creditByBarcode = transactionFacade.decodeImageForCredit(file)
         creditByBarcode.externalKey = UUID.randomUUID().toString()
@@ -109,7 +124,7 @@ class TransactionController(
     @RequestMapping(value = ["/credit/barcode/{externalKey}"],
         method = [RequestMethod.POST],
         produces = [MediaType.ALL_VALUE])
-    @ApiOperation(value = "Consult barcode registered for credit in account by barcode externalKey")
+    @Operation(summary = "Consult barcode registered for credit in account by barcode externalKey")
     fun consultBarcodeForCredit(
         @PathVariable externalKey: String,
     ): ResponseEntity<String> {
@@ -128,7 +143,7 @@ class TransactionController(
     @RequestMapping(value = ["/findBarcodeByAccount/{accountExternalKey}"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ApiOperation(value = "Consult all barcodes registered for account with externalKey")
+    @Operation(summary = "Consult all barcodes registered for account with externalKey")
     fun findBarcodeByAccount(@PathVariable accountExternalKey: String): ResponseEntity<List<BarcodeRegister>> {
         val barcodeRegister = transactionFacade.findBarcodeByAccount(accountExternalKey)
         return ResponseEntity.ok(barcodeRegister)
@@ -138,14 +153,14 @@ class TransactionController(
     @RequestMapping(value = ["/generate/statement"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ApiOperation(value = "Generate consult of statement by type")
+    @Operation(summary = "Generate consult of statement by type")
     fun statement(
         accountExternalKey: String,
         transactionType: TransactionType,
         initialDate: String,
         finalDate: String,
-        saveConsult: Boolean
-    ): ResponseEntity<List<Transaction>> {
+        saveConsult: Boolean,
+    ): ResponseEntity<List<Transactions>> {
         val transactions = transactionFacade.generateStatement(UUID.fromString(accountExternalKey),
             transactionType, initialDate, finalDate, saveConsult)
         return ResponseEntity.ok(transactions)
@@ -154,7 +169,7 @@ class TransactionController(
     @RequestMapping(value = ["/findAllStatement"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ApiOperation(value = "Find all statements")
+    @Operation(summary = "Find all statements")
     fun findAllStatements(): List<BankStatement> {
         return transactionFacade.findAllStatements()
     }
@@ -162,7 +177,7 @@ class TransactionController(
     @RequestMapping(value = ["/findStatementByType/{externalKey}"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ApiOperation(value = "Find saved statement by statement external key")
+    @Operation(summary = "Find saved statement by statement external key")
     fun findStatementsByType(@PathVariable externalKey: UUID): ResponseEntity<List<BankStatementDTO>> {
         return ResponseEntity.ok(transactionFacade.findStatementByExternalKey(externalKey))
     }

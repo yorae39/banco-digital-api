@@ -1,20 +1,17 @@
 package com.example.bancodigital.model
 
-import com.example.bancodigital.converter.LocalDateConverter
 import com.example.bancodigital.util.Constants.Companion.MAX_ACCOUNT_NUMBER
-import org.hibernate.annotations.Type
 import java.time.LocalDate
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Convert
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import kotlin.random.Random
 
 @Entity
@@ -22,12 +19,11 @@ data class Account(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    @Type(type="uuid-char")
+    @Column(name = "external_key", columnDefinition = "VARCHAR(36)")
     val externalKey: UUID = UUID.randomUUID(),
     var balance: Long = 0,
     val active: Boolean = true,
     var accountNumber: Long = randomAccountNumber(),
-    @Convert(converter = LocalDateConverter::class)
     val dateCreation: LocalDate = LocalDate.now(),
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -71,7 +67,7 @@ data class Account(
             Account(
                 id = savedAccount.id,
                 externalKey = savedAccount.externalKey,
-                balance = balance,
+                balance = balance + savedAccount.balance,
                 active = savedAccount.active,
                 accountNumber = savedAccount.accountNumber,
                 dateCreation = savedAccount.dateCreation,

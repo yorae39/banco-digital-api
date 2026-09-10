@@ -2,7 +2,7 @@ package com.example.bancodigital.service
 
 import com.example.bancodigital.dto.BankStatementDTO
 import com.example.bancodigital.model.BankStatement
-import com.example.bancodigital.model.Transaction
+import com.example.bancodigital.model.Transactions
 import com.example.bancodigital.model.TransactionType
 import com.example.bancodigital.repository.BankStatementRepository
 import com.example.bancodigital.repository.TransactionRepository
@@ -23,7 +23,7 @@ class BankStatementService(
         initialDate: String,
         finalDate: String,
         saveConsult: Boolean
-    ): List<Transaction> {
+    ): List<Transactions> {
         val initial = parseStringToLocalDate.parse(initialDate)
         val final = parseStringToLocalDate.parse(finalDate)
         val transactions = transactionRepository.findTransactionsByExternalKeyAndTransactionType(accountExternalKey,

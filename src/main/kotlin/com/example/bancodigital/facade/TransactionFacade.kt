@@ -7,7 +7,7 @@ import com.example.bancodigital.dto.DebitByQrcodeDTO
 import com.example.bancodigital.dto.DebitDTO
 import com.example.bancodigital.model.BankStatement
 import com.example.bancodigital.model.BarcodeRegister
-import com.example.bancodigital.model.Transaction
+import com.example.bancodigital.model.Transactions
 import com.example.bancodigital.model.TransactionType
 import com.example.bancodigital.service.BankStatementService
 import com.example.bancodigital.service.BarcodeService
@@ -28,12 +28,15 @@ class TransactionFacade(
     private val bankStatementService: BankStatementService,
 ) {
 
-    fun findTransactionsByAccount(id: Long): List<Transaction> {
+    fun findTransactionsByAccount(id: Long): List<Transactions> {
         return transactionService.findTransactionsByAccount(id)
     }
 
     fun transactionOfCredit(creditDTO: CreditDTO, externalKey: UUID): String {
         return transactionService.transactionOfCredit(creditDTO, externalKey)
+    }
+    fun transactionOfCreditScheduling(creditDTO: CreditDTO, externalKey: UUID): String {
+        return transactionService.transactionOfCreditScheduled(creditDTO, externalKey)
     }
 
     fun validationsForDebit(externalKey: UUID, value: BigDecimal): String {
@@ -82,7 +85,7 @@ class TransactionFacade(
         initialDate: String,
         finalDate: String,
         saveConsult: Boolean
-    ): List<Transaction> {
+    ): List<Transactions> {
         return bankStatementService.generate(accountExternalKey, transactionType, initialDate, finalDate, saveConsult)
     }
 

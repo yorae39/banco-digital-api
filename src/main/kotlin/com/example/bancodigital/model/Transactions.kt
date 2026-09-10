@@ -1,38 +1,35 @@
 package com.example.bancodigital.model
 
-import com.example.bancodigital.converter.LocalDateConverter
 import com.example.bancodigital.dto.CreditDTO
 import com.example.bancodigital.dto.DebitDTO
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.hibernate.annotations.Type
+import jakarta.persistence.Column
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
-import javax.persistence.Convert
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 
 @Entity
-data class Transaction(
+data class Transactions(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    @Type(type="uuid-char")
+    @Column(name = "external_key", columnDefinition = "VARCHAR(36)")
     val externalKey: UUID = UUID.randomUUID(),
-    @Type(type="uuid-char")
+    @Column(name = "qrcode_external_key", columnDefinition = "VARCHAR(36)")
     var qrcodeExternalKey: UUID? = null,
-    @Type(type="uuid-char")
+    @Column(name = "barcode_external_key", columnDefinition = "VARCHAR(36)")
     var barcodeExternalKey: UUID? = null,
     val description: String,
     val observation: String,
     val value: BigDecimal,
-    @Convert(converter = LocalDateConverter::class)
     val dateTransaction: LocalDate = LocalDate.now(),
     @Enumerated(EnumType.STRING)
     val transactionType: TransactionType,
@@ -43,7 +40,7 @@ data class Transaction(
 ){
     companion object {
         fun operationOfCredit(creditDTO: CreditDTO, savedAccount: Account) =
-          Transaction(
+          Transactions(
               description = creditDTO.description,
               observation = creditDTO.observation,
               value = creditDTO.value,
@@ -52,7 +49,7 @@ data class Transaction(
           )
 
         fun operationOfDebit(debitDTO: DebitDTO, savedAccount: Account) =
-            Transaction(
+            Transactions(
                 description = debitDTO.description,
                 observation = debitDTO.observation,
                 value = debitDTO.value,

@@ -1,53 +1,87 @@
 package com.example.bancodigital.config
 
-import com.example.bancodigital.model.RoleType
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
 class JwtAuthSecurityConfig(
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
-    private val jwtRequestFilter: JwtRequestFilter
-): WebSecurityConfigurerAdapter() {
+    @Lazy private val jwtRequestFilter: JwtRequestFilter
+) {
 
+    /*
+     Para testar se o spring estava vendo esta classe
+    init {
+        println("🔥🔥🔥 JwtAuthSecurityConfig INSTANCIADA COM SUCESSO! 🔥🔥🔥")
+    }*/
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder(10)
+        return BCryptPasswordEncoder()
+    }
+
+    // O Spring Security gerencia o UserDetailsService automaticamente
+    // através da AuthenticationConfiguration padrão do framework
+    @Bean
+    @Throws(Exception::class)
+    fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
+        return authenticationConfiguration.authenticationManager
     }
 
     @Bean
     @Throws(Exception::class)
-    override fun authenticationManagerBean(): AuthenticationManager {
-        return super.authenticationManagerBean()
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        http
+            .csrf { csrf -> csrf.disable() }
+            .cors { }
+            .sessionManagement { session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+            .exceptionHandling { exception ->
+                exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            }
+            .authorizeHttpRequests { auth ->
+                // 1. Libera Swagger E a rota de Autenticação/Login
+                auth.requestMatchers(
+                    "/authenticate", // <-- ADICIONADO AQUI (Ajuste a URL do seu login se for diferente)
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+                ).permitAll()
+
+                // 2. Operações de DELETE requerem ADMIN
+                auth.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
+
+                // 3. Rotas da API requerem ADMIN ou USER
+                auth.requestMatchers(
+                    "/holders/**",
+                    "/accounts/**",
+                    "/address/**",
+                    "/transactions/**"
+                ).hasAnyRole("ADMIN", "USER")
+
+                // 4. Exige autenticação para qualquer outra rota não mapeada acima
+                auth.anyRequest().authenticated()
+            }
+            .addFilterBefore(
+                jwtRequestFilter,
+                UsernamePasswordAuthenticationFilter::class.java
+            )
+
+        return http.build()
     }
-
-    @Throws(Exception::class)
-    override fun configure(httpSecurity: HttpSecurity) {
-        //DESABILITAR CSRF
-        httpSecurity.csrf().disable() // Somente o administrador pode executar a operação de exclusão HTTP
-            .authorizeRequests().antMatchers(HttpMethod.DELETE)
-            .hasRole(RoleType.ADMIN.name) // qualquer usuário autenticado pode realizar todas as outras operações
-            .antMatchers("/holders/**", "/accounts/**", "/address/**", "/transactions/**")
-            .hasAnyRole(RoleType.ADMIN.name, RoleType.USER.name) //Permite todas as outras requisições sem autenticação
-            .and().authorizeRequests().anyRequest()
-            .permitAll() // Rejeita todas as solicitações não autenticadas e envia o código de erro 401.
-            .and().exceptionHandling()
-            .authenticationEntryPoint(jwtAuthenticationEntryPoint) // Não precisamos criar sessões.
-            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-        // Adiciona um filtro para validar os tokens a cada solicitação
-        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)
-    }
-
 }

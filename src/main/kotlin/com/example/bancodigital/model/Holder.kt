@@ -1,18 +1,15 @@
 package com.example.bancodigital.model
 
-import com.example.bancodigital.converter.LocalDateConverter
 import com.example.bancodigital.dto.HolderDTO
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 import java.time.LocalDate
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Convert
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 
 @Entity
 @JsonIgnoreProperties(value = ["accounts"])
@@ -20,17 +17,15 @@ data class Holder(
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    val id: Long,
-   @Type(type="uuid-char")
+   @Column(name = "external_key", columnDefinition = "VARCHAR(36)")
    val externalKey: UUID = UUID.randomUUID(),
    @Length(min=2, max=120)
    var name: String,
    @Length(min=11, max=11)
    @Column(unique=true, nullable = false)
    val nationalRegistration: String,
-   @Convert(converter = LocalDateConverter::class)
    val birthDate: LocalDate,
    val active: Boolean = true,
-   @Convert(converter = LocalDateConverter::class)
    @Column(nullable = true)
    val dateCreation: LocalDate = LocalDate.now(),
    val info: String
@@ -40,7 +35,7 @@ data class Holder(
 
       fun updateHolder(id: Long, holderDTO: HolderDTO, savedHolder: Optional<Holder>, info: String) = Holder(
          id = id,
-         externalKey =savedHolder.get().externalKey,
+         externalKey = savedHolder.get().externalKey,
          name = holderDTO.name,
          nationalRegistration = savedHolder.get().nationalRegistration,
          active = savedHolder.get().active,

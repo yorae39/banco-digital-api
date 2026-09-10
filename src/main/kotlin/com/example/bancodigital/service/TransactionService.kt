@@ -1,18 +1,19 @@
 package com.example.bancodigital.service
 
 import com.example.bancodigital.dto.CreditDTO
-import com.example.bancodigital.dto.CreditByBarcode
 import com.example.bancodigital.dto.DebitByQrcodeDTO
 import com.example.bancodigital.dto.DebitDTO
+import com.example.bancodigital.log.logger
 import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.AccountType
 import com.example.bancodigital.model.BarcodeRegister
-import com.example.bancodigital.model.Transaction
+import com.example.bancodigital.model.Transactions
 import com.example.bancodigital.repository.AccountRepository
 import com.example.bancodigital.repository.TransactionRepository
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.*
+
 
 @Service
 class TransactionService(
@@ -20,7 +21,7 @@ class TransactionService(
     val accountRepository: AccountRepository,
 ) {
 
-    fun findTransactionsByAccount(id: Long): List<Transaction> {
+    fun findTransactionsByAccount(id: Long): List<Transactions> {
         val transactions = transactionRepository.findTransactions(id)
         return transactions.ifEmpty { listOf() }
     }
@@ -30,12 +31,31 @@ class TransactionService(
         return if (savedAccount != null && savedAccount.active) {
             val credit = Account.operationOfCredit(creditDTO.value.toLong(), savedAccount)
             accountRepository.save(credit)
-            val transaction = Transaction.operationOfCredit(creditDTO, savedAccount)
+            val transaction = Transactions.operationOfCredit(creditDTO, savedAccount)
             transactionRepository.save(transaction)
             "Credit entered successfully : Actual Balance = ${credit.balance}, Description: ${creditDTO.description}"
         } else {
             "Account not found or inactive"
         }
+    }
+
+    fun transactionOfCreditScheduled(creditDTO: CreditDTO, externalKey: UUID): String {
+        val periodConclusion: Long = 60000
+        val message: String
+        val savedAccount = accountRepository.findByExternalKey(externalKey)
+        if (savedAccount != null && savedAccount.active) {
+            val credit = Account.operationOfCredit(creditDTO.value.toLong(), savedAccount)
+            message = "Check the balance after one minute for effectiveness"
+            Timer().schedule(object : TimerTask() {
+                override fun run() {
+                    accountRepository.save(credit)
+                    logger().trace("Credit entered successfully : Actual Balance = ${credit.balance}, Description: ${creditDTO.description}")
+                }
+            }, periodConclusion)
+        } else {
+            message = "Account not found or inactive"
+        }
+        return message
     }
 
     fun transactionOfDebit(debitDTO: DebitDTO, externalKey: UUID): String {
@@ -68,8 +88,8 @@ class TransactionService(
             savedAccount.balance -= debitDTO.value.toLong()
             val debit = Account.operationOfDebit(savedAccount)
             accountRepository.save(debit)
-            val transaction = Transaction.operationOfDebit(debitDTO, savedAccount)
-            if (qrcodeExternalKey!= null) transaction.qrcodeExternalKey = UUID.fromString(qrcodeExternalKey)
+            val transaction = Transactions.operationOfDebit(debitDTO, savedAccount)
+            if (qrcodeExternalKey != null) transaction.qrcodeExternalKey = UUID.fromString(qrcodeExternalKey)
             transactionRepository.save(transaction)
             return "Debit entered successfully : Actual Balance = ${debit.balance}, Description = ${debitDTO.description}"
         } else {
@@ -80,13 +100,13 @@ class TransactionService(
     private fun savedAccountForCredit(
         savedAccount: Account?,
         creditDTO: CreditDTO,
-        barcodeExternalKey: UUID
+        barcodeExternalKey: UUID,
     ): String {
         return if (savedAccount != null && savedAccount.active) {
             savedAccount.balance += creditDTO.value.toLong()
             val credit = Account.operationOfCredit(savedAccount.balance, savedAccount)
             accountRepository.save(credit)
-            val transaction = Transaction.operationOfCredit(creditDTO, savedAccount)
+            val transaction = Transactions.operationOfCredit(creditDTO, savedAccount)
             transaction.barcodeExternalKey = barcodeExternalKey
             transactionRepository.save(transaction)
             return "Credit entered successfully : Actual Balance = ${credit.balance}, Description = ${creditDTO.description}"

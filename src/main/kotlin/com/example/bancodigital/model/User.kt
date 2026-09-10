@@ -1,13 +1,13 @@
 package com.example.bancodigital.model
 
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.JoinTable
-import javax.persistence.ManyToMany
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinTable
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToMany
 
 @Entity
 data class User(
@@ -17,11 +17,11 @@ data class User(
     val username: String,
     val password: String,
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role",
-        joinColumns = [JoinColumn(name = "userId", referencedColumnName = "id",
-            nullable = false, updatable = false)],
-        inverseJoinColumns = [JoinColumn(name = "roleId", referencedColumnName = "id",
-            nullable = false, updatable = false)])
+    @JoinTable(
+        name = "user_role",
+        joinColumns = [JoinColumn(name = "userId", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "roleId", referencedColumnName = "id")]
+    )
     val roles: Set<Role>
 ) {
     override fun equals(other: Any?): Boolean {

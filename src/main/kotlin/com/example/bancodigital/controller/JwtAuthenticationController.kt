@@ -4,7 +4,7 @@ import com.example.bancodigital.log.logger
 import com.example.bancodigital.model.JwtRequest
 import com.example.bancodigital.model.JwtResponse
 import com.example.bancodigital.util.JwtTokenUtil
-import io.swagger.annotations.Api
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @CrossOrigin
-@Api(tags = ["Authentication JWT"])
+@Tag(name = "Authentication JWT")
 class JwtAuthenticationController(
     private val authenticationManager: AuthenticationManager,
     private val jwtTokenUtil: JwtTokenUtil,

@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.BufferedOutputStream
 import java.io.IOException
 import javax.imageio.ImageIO
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
 
 @Service
@@ -42,7 +42,7 @@ class QrCodeService {
         httpServletResponse: HttpServletResponse,
     ) {
         httpServletResponse.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-            "attachment;filename=" + qrCodeGenerationDTO.title.trim().replace(" ", "_").toString() + ".png")
+            "attachment;filename=" + qrCodeGenerationDTO.title.trim().replace(" ", "_") + ".png")
         val outputStream = BufferedOutputStream(httpServletResponse.outputStream)
         val writer = QRCodeWriter()
         val bitMatrix = writer.encode(ObjectMapper().writeValueAsString(qrCodeGenerationDTO),
@@ -57,7 +57,7 @@ class QrCodeService {
         response: HttpServletResponse,
     ) {
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-            "attachment;filename=" + dto.description.trim().replace(" ", "_").toString() + ".png")
+            "attachment;filename=" + dto.description.trim().replace(" ", "_") + ".png")
         val outputStream = BufferedOutputStream(response.outputStream)
         val writer = QRCodeWriter()
         val bitMatrix = writer.encode(ObjectMapper().writeValueAsString(dto),
@@ -74,6 +74,4 @@ class QrCodeService {
         val result: Result = MultiFormatReader().decode(binaryBitmap)
         return ObjectMapper().readValue(result.text, DebitByQrcodeDTO::class.java)
     }
-
-
 }

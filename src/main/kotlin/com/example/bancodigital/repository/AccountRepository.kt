@@ -4,7 +4,7 @@ import com.example.bancodigital.model.Account
 import com.example.bancodigital.model.Holder
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import java.util.*
+import java.util.UUID
 
 interface AccountRepository : JpaRepository<Account, Long> {
     fun findByExternalKey(externalKey: UUID): Account?

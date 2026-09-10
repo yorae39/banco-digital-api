@@ -12,7 +12,7 @@ CREATE TABLE bank_statement_transaction(
       transaction_id BIGINT,
       bank_statement_id BIGINT,
       CONSTRAINT fk_transaction FOREIGN KEY (transaction_id)
-          REFERENCES transaction (id),
+          REFERENCES transactions (id),
       CONSTRAINT fk_bank_statement FOREIGN KEY (bank_statement_id)
           REFERENCES bank_statement (id)
 );

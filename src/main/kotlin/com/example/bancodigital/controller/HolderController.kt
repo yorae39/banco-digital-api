@@ -5,7 +5,7 @@ import com.example.bancodigital.event.CreateEvent
 import com.example.bancodigital.facade.HolderFacade
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.model.response.HolderResponse
-import io.swagger.annotations.Api
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
-import javax.servlet.http.HttpServletResponse
-import javax.validation.Valid
+import jakarta.servlet.http.HttpServletResponse
+import jakarta.validation.Valid
 
 @RestController
 @RequestMapping("/holders")
-@Api(tags = ["Holder"])
+@Tag(name = "Holder")
 class HolderController(
     val holderFacade: HolderFacade
 ) : HolderApi {
@@ -58,7 +58,7 @@ class HolderController(
     @RequestMapping(value = ["/findByExternalKey/{externalKey}"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
-    override fun findByExternalKey(@PathVariable externalKey: String): ResponseEntity<Holder?> {
+    override fun findByExternalKey(@PathVariable externalKey: String): ResponseEntity<Holder> {
         val holder = holderFacade.findByExternalKey(externalKey)
         return if (holder == null) ResponseEntity.notFound().build() else ResponseEntity.ok(holder)
     }
