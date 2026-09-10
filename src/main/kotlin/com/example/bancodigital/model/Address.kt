@@ -1,6 +1,7 @@
 package com.example.bancodigital.model
 
 import com.example.bancodigital.dto.AddressDTO
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDate
 import java.util.*
@@ -24,6 +25,7 @@ data class Address(
     val zipCode: String,
     val city: String,
     val state: String,
+    @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(nullable = true)
     var dateCreation: LocalDate = LocalDate.now(),
     @JsonIgnore

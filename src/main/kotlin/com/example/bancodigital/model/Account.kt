@@ -1,6 +1,7 @@
 package com.example.bancodigital.model
 
 import com.example.bancodigital.util.Constants.Companion.MAX_ACCOUNT_NUMBER
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDate
 import java.util.*
 import jakarta.persistence.Column
@@ -12,6 +13,8 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import kotlin.random.Random
 
 @Entity
@@ -19,11 +22,13 @@ data class Account(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "external_key", columnDefinition = "VARCHAR(36)")
     val externalKey: UUID = UUID.randomUUID(),
     var balance: Long = 0,
     val active: Boolean = true,
     var accountNumber: Long = randomAccountNumber(),
+    @JsonFormat(pattern = "dd/MM/yyyy")
     val dateCreation: LocalDate = LocalDate.now(),
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

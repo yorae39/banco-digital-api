@@ -21,7 +21,7 @@ import jakarta.validation.Valid
 
 @RestController
 @RequestMapping("/holders")
-@Tag(name = "Holder")
+//@Tag(name = "Holder")
 class HolderController(
     val holderFacade: HolderFacade
 ) : HolderApi {

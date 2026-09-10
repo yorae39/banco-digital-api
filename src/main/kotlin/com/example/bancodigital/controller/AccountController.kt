@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/accounts")
-@Tag(name = "Account")
+//@Tag(name = "Account")
 class AccountController(
     val accountFacade: AccountFacade
 ) : AccountApi {

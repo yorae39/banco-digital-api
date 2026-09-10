@@ -8,12 +8,15 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Entity
 data class BarcodeRegister(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "external_key", columnDefinition = "VARCHAR(36)")
     val externalKey: UUID = UUID.randomUUID(),
     @Column(name = "account_external_key", columnDefinition = "VARCHAR(36)", nullable = false)

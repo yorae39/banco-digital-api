@@ -20,7 +20,7 @@ import jakarta.validation.Valid
 
 @RestController
 @RequestMapping("/address")
-@Tag(name = "Address")
+//@Tag(name = "Address")
 class AddressController(
     val addressFacade: AddressFacade
 ) : AddressApi {

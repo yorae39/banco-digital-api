@@ -17,7 +17,7 @@ interface TransactionAPi {
 
     @Operation(summary = "Get list of transactions of a account in the System")
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Success"),
+        ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = String::class))]),
         ApiResponse(responseCode = "401", description = "Not authorized!", content = [Content()]),
         ApiResponse(responseCode = "403", description = "Forbidden!", content = [Content()]),
         ApiResponse(responseCode = "404", description = "Not found!", content = [Content()])

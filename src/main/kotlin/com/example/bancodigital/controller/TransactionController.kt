@@ -30,12 +30,12 @@ import java.util.*
 
 @RestController
 @RequestMapping("/transactions")
-@Tag(name = "Transaction")
+// @Tag(name = "Transaction") - Coloque assim caso não queira uma interface de documentação com a TransactionAPi
 class TransactionController(
     val transactionFacade: TransactionFacade,
 ) : TransactionAPi {
 
-    @RequestMapping(value = ["/findAll/{id}"],
+    @RequestMapping(value = ["/findTransactionsByAccount/{id}"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun findTransactionsByAccount(@PathVariable id: Long): List<Transactions> {
@@ -94,7 +94,7 @@ class TransactionController(
         return if (validations.isNotEmpty()) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(validations)
         } else {
-            return ResponseEntity.ok(transactionFacade.transactionOfDebitByQrcode(debitByQrcodeDTO))
+            ResponseEntity.ok(transactionFacade.transactionOfDebitByQrcode(debitByQrcodeDTO))
         }
     }
 

@@ -91,7 +91,7 @@ class TransactionService(
             val transaction = Transactions.operationOfDebit(debitDTO, savedAccount)
             if (qrcodeExternalKey != null) transaction.qrcodeExternalKey = UUID.fromString(qrcodeExternalKey)
             transactionRepository.save(transaction)
-            return "Debit entered successfully : Actual Balance = ${debit.balance}, Description = ${debitDTO.description}"
+            "Debit entered successfully : Actual Balance = ${debit.balance}, Description = ${debitDTO.description}"
         } else {
             "Account not found or inactive"
         }
@@ -109,7 +109,7 @@ class TransactionService(
             val transaction = Transactions.operationOfCredit(creditDTO, savedAccount)
             transaction.barcodeExternalKey = barcodeExternalKey
             transactionRepository.save(transaction)
-            return "Credit entered successfully : Actual Balance = ${credit.balance}, Description = ${creditDTO.description}"
+            "Credit entered successfully : Actual Balance = ${credit.balance}, Description = ${creditDTO.description}"
         } else {
             "Account not found or inactive"
         }
@@ -118,7 +118,7 @@ class TransactionService(
     fun validationsForDebit(externalKey: UUID, value: BigDecimal): String {
         val savedAccount = accountRepository.findByExternalKey(externalKey)
         return if (savedAccount != null && savedAccount.active) {
-            return if (savedAccount.balance < value.toLong() && savedAccount.accountType == AccountType.NORMAL) {
+            if (savedAccount.balance < value.toLong() && savedAccount.accountType == AccountType.NORMAL) {
                 "Debit exceeds account balance limit"
             } else if (savedAccount.balance < -1000 && savedAccount.accountType == AccountType.VIP) {
                 "Insufficient balance for this operation"

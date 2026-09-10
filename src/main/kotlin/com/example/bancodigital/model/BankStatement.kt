@@ -15,14 +15,18 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.ForeignKey
 import jakarta.persistence.JoinTable
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Entity
 data class BankStatement(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "external_key", columnDefinition = "VARCHAR(36)")
     val externalKey: UUID = UUID.randomUUID(),
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "account_external_key", columnDefinition = "VARCHAR(36)")
     val accountExternalKey: UUID,
     val initialDate: LocalDate,
