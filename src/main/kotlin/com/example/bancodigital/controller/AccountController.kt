@@ -87,7 +87,6 @@ class AccountController(
         return ResponseEntity.ok(info)
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = ["/update/{id}/{active}"],
         method = [RequestMethod.PUT],
         consumes = [MediaType.ALL_VALUE])
@@ -95,5 +94,4 @@ class AccountController(
         val info = accountFacade.updateActiveProperty(id, active)
         return ResponseEntity.ok(info)
     }
-
 }

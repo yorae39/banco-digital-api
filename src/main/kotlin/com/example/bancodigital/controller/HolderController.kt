@@ -77,7 +77,6 @@ class HolderController(
         }
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = ["/update/{id}/{active}"],
         method = [RequestMethod.PUT],
         consumes = [MediaType.ALL_VALUE])

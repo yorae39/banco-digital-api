@@ -20,14 +20,14 @@ data class BarcodeRegister(
     @Column(name = "external_key", columnDefinition = "VARCHAR(36)")
     val externalKey: UUID = UUID.randomUUID(),
     @Column(name = "account_external_key", columnDefinition = "VARCHAR(36)", nullable = false)
-    val accountExternalKey: UUID,
+    val accountExternalKey: String,
     val description: String,
     val observation: String,
     val value: BigDecimal
 ) {
     companion object {
         fun fromBarcodeRegister(creditByBarcode: CreditByBarcode) = BarcodeRegister(
-            accountExternalKey = UUID.fromString(creditByBarcode.accountExternalKey),
+            accountExternalKey = creditByBarcode.accountExternalKey,
             description = creditByBarcode.description,
             observation = creditByBarcode.observation,
             value = creditByBarcode.value

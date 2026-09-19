@@ -76,7 +76,7 @@ class TransactionFacade(
     }
 
     fun findBarcodeByAccount(accountExternalKey: String): List<BarcodeRegister>? {
-        return barcodeService.findBarcodeByAccount(UUID.fromString(accountExternalKey))
+        return barcodeService.findBarcodeByAccount(accountExternalKey)
     }
 
     fun generateStatement(

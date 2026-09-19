@@ -63,7 +63,7 @@ class BarCodesController(
 
     /*O IDEAL SERIA SALVAR NO BANCO...*/
     private fun save(bufferedImage: BufferedImage) {
-        val barcode = File("/home/luiz/Testes/Estudo/codigo-barras.jpg")
+        val barcode = File("C:\\Users\\Windows\\Desktop\\Workspace\\barcode\\codigo-barras.jpg")
         ImageIO.write(bufferedImage, "jpg", barcode)
     }
 }

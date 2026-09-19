@@ -18,7 +18,7 @@ class BarcodeService(
         return barcodeRepository.findByExternalKey(externalKey)
     }
 
-    fun findBarcodeByAccount(accountExternalKey: UUID) : List<BarcodeRegister>? {
+    fun findBarcodeByAccount(accountExternalKey: String) : List<BarcodeRegister>? {
         return barcodeRepository.findByAccountExternalKey(accountExternalKey)
     }
 

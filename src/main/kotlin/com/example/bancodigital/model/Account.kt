@@ -42,6 +42,14 @@ data class Account(
         accountNumber = randomAccountNumber()
     }
 
+    fun credit(value : Long) {
+        balance += value
+    }
+
+    fun debit(value: Long) {
+        balance -= value
+    }
+
     companion object {
 
         fun randomAccountNumber() = Random.nextLong(MAX_ACCOUNT_NUMBER)
@@ -67,29 +75,5 @@ data class Account(
             accountType = savedAccount.get().accountType,
             holder = savedAccount.get().holder
         )
-
-        fun operationOfCredit(balance: Long, savedAccount: Account) =
-            Account(
-                id = savedAccount.id,
-                externalKey = savedAccount.externalKey,
-                balance = balance + savedAccount.balance,
-                active = savedAccount.active,
-                accountNumber = savedAccount.accountNumber,
-                dateCreation = savedAccount.dateCreation,
-                accountType = savedAccount.accountType,
-                holder = savedAccount.holder
-            )
-
-        fun operationOfDebit(savedAccount: Account) =
-            Account(
-                id = savedAccount.id,
-                externalKey = savedAccount.externalKey,
-                balance = savedAccount.balance,
-                active = savedAccount.active,
-                accountNumber = savedAccount.accountNumber,
-                dateCreation = savedAccount.dateCreation,
-                accountType = savedAccount.accountType,
-                holder = savedAccount.holder
-            )
     }
 }

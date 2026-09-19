@@ -130,7 +130,8 @@ class TransactionController(
     ): ResponseEntity<String> {
         val barcode = transactionFacade.findBarcode(externalKey)
         if (barcode != null) {
-            val validation = transactionFacade.validationForCredit(barcode.accountExternalKey)
+            val validation = transactionFacade
+                .validationForCredit(UUID.fromString(barcode.accountExternalKey))
             return if (validation) {
                 ResponseEntity.ok(transactionFacade.transactionOfCreditByBarcode(barcode))
             } else {

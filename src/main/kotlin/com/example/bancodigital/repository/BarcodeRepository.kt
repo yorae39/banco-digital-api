@@ -6,5 +6,5 @@ import java.util.UUID
 
 interface BarcodeRepository : JpaRepository<BarcodeRegister, Long> {
     fun findByExternalKey(externalKey: UUID): BarcodeRegister?
-    fun findByAccountExternalKey(accountExternalKey: UUID): List<BarcodeRegister>?
+    fun findByAccountExternalKey(accountExternalKey: String): List<BarcodeRegister>?
 }

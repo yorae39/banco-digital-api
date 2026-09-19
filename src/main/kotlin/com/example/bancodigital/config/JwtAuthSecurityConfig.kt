@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class JwtAuthSecurityConfig(
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
+    private val jwtAccessDeniedHandler: JwtAccessDeniedHandler,
     @Lazy private val jwtRequestFilter: JwtRequestFilter
 ) {
 
@@ -50,7 +51,9 @@ class JwtAuthSecurityConfig(
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .exceptionHandling { exception ->
-                exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                exception
+                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                    .accessDeniedHandler(jwtAccessDeniedHandler)
             }
             .authorizeHttpRequests { auth ->
                 // 1. Libera Swagger E a rota de Autenticação/Login
@@ -63,8 +66,12 @@ class JwtAuthSecurityConfig(
                     "/webjars/**"
                 ).permitAll()
 
-                // 2. Operações de DELETE requerem ADMIN
-                auth.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
+                // 2. Operações de exclusão lógica requerem ADMIN
+                auth.requestMatchers(
+                    HttpMethod.PUT,
+                    "/accounts/update/*/*",
+                    "/holders/update/*/*"
+                ).hasRole("ADMIN")
 
                 // 3. Rotas da API requerem ADMIN ou USER
                 auth.requestMatchers(

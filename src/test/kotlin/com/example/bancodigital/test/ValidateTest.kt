@@ -33,15 +33,15 @@ class ValidateTest {
 
     @ParameterizedTest(name = "Should success for birth date \"{0}\"")
     @ValueSource(strings = ["2004-01-01", "1974-07-13", "1977-03-17"])
-    fun `validate valid birthdate`(nationalRegistration: String): Unit =
-        validateBD(nationalRegistration).let {
+    fun `validate valid birthdate`(birthdate: String): Unit =
+        validateBD(birthdate).let {
             assertThat(it).isTrue
         }
 
     @ParameterizedTest(name = "Should fail for birth date \"{0}\"")
-    @ValueSource(strings = ["2022-01-01", "2005-01-01", "2008-01-01"])
-    fun `validate invalid birthdate`(nationalRegistration: String): Unit =
-        validateBD(nationalRegistration).let {
+    @ValueSource(strings = ["2026-01-01", "2009-01-01", "2012-01-01"])
+    fun `validate invalid birthdate`(birthdate: String): Unit =
+        validateBD(birthdate).let {
             assertThat(it).isFalse
         }
 
