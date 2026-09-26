@@ -5,17 +5,13 @@ import com.example.bancodigital.util.ValidateNationalRegistration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDate
 
-@SpringBootTest
 class ValidateTest {
 
-    @Autowired
-    private lateinit var validateNationalRegistration: ValidateNationalRegistration
-    @Autowired
-    private lateinit var  validateBirthDate: ValidateBirthDate
+    private val validateNationalRegistration = ValidateNationalRegistration()
+
+    private val validateBirthDate = ValidateBirthDate()
 
     @ParameterizedTest(name = "Should success for national registration \"{0}\"")
     @ValueSource(strings = ["68947376060", "22258529018", "40281852030"])
