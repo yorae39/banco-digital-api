@@ -1,11 +1,11 @@
 package com.example.bancodigital.controller
 
-import com.example.bancodigital.dto.HolderDTO
+import com.example.bancodigital.dto.CreateHolderDTO
+import com.example.bancodigital.dto.UpdateHolderDTO
 import com.example.bancodigital.event.CreateEvent
 import com.example.bancodigital.facade.HolderFacade
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.model.response.HolderResponse
-import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -34,14 +34,14 @@ class HolderController(
 
     @RequestMapping(value = ["/save"], method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun createHolder(
-        @Valid @RequestBody holder: Holder,
+        @Valid @RequestBody createHolderDTO: CreateHolderDTO,
         httpServletResponse: HttpServletResponse,
     ): ResponseEntity<Any> {
-        val validate = holderFacade.validateForCreate(holder)
+        val validate = holderFacade.validateForCreate(createHolderDTO)
         return if(validate.isNotEmpty()){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
         } else {
-            val savedHolder = holderFacade.createHolder(holder)
+            val savedHolder = holderFacade.createHolder(createHolderDTO)
             holderFacade.publishEvent(CreateEvent(this, httpServletResponse, savedHolder.id))
             ResponseEntity.status(HttpStatus.CREATED).body(savedHolder)
         }
@@ -67,12 +67,15 @@ class HolderController(
     @RequestMapping(value = ["/update/{id}"],
         method = [RequestMethod.PUT],
         consumes = [MediaType.APPLICATION_JSON_VALUE])
-    override fun update(@PathVariable id: Long, @RequestBody holderDTO: HolderDTO): ResponseEntity<Any> {
-        val validate = holderFacade.validateForUpdate(holderDTO)
+    override fun update(
+        @PathVariable id: Long,
+        @RequestBody updateHolderDTO: UpdateHolderDTO
+    ): ResponseEntity<Any> {
+        val validate = holderFacade.validateForUpdate(updateHolderDTO)
         return if(validate.isNotEmpty()){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
         } else {
-            val savedHolder = holderFacade.updateHolder(id, holderDTO)
+            val savedHolder = holderFacade.updateHolder(id, updateHolderDTO)
             ResponseEntity.ok(HolderResponse.from(savedHolder))
         }
     }

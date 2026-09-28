@@ -1,6 +1,7 @@
 package com.example.bancodigital.controller
 
-import com.example.bancodigital.dto.HolderDTO
+import com.example.bancodigital.dto.CreateHolderDTO
+import com.example.bancodigital.dto.UpdateHolderDTO
 import com.example.bancodigital.model.Holder
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -28,7 +29,7 @@ interface HolderApi {
         summary = "Create holder",
         responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = String::class))])]
     )
-    fun createHolder(holder: Holder, httpServletResponse: HttpServletResponse): ResponseEntity<Any>
+    fun createHolder(createHolderDTO: CreateHolderDTO, httpServletResponse: HttpServletResponse): ResponseEntity<Any>
 
     @Operation(
         summary = "Get holder by id",
@@ -46,7 +47,7 @@ interface HolderApi {
         summary = "Update holder by holder id",
         responses = [ApiResponse(responseCode = "200", description = "Success", content = [Content(schema = Schema(implementation = Holder::class))])]
     )
-    fun update(id: Long, holderDTO: HolderDTO): ResponseEntity<Any>
+    fun update(id: Long, updateHolderDTO: UpdateHolderDTO): ResponseEntity<Any>
 
     @Operation(
         summary = "Update active property status from by holder id",

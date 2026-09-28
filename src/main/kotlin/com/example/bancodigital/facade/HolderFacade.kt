@@ -1,6 +1,7 @@
 package com.example.bancodigital.facade
 
-import com.example.bancodigital.dto.HolderDTO
+import com.example.bancodigital.dto.CreateHolderDTO
+import com.example.bancodigital.dto.UpdateHolderDTO
 import com.example.bancodigital.event.CreateEvent
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.service.HolderService
@@ -18,12 +19,12 @@ class HolderFacade(
         return holderService.findAll()
     }
 
-    fun validateForCreate(holder: Holder): String {
-        return holderService.validateForCreate(holder)
+    fun validateForCreate(createHolderDTO: CreateHolderDTO): String {
+        return holderService.validateForCreate(createHolderDTO)
     }
 
-    fun createHolder(holder: Holder): Holder {
-        return holderService.createHolder(holder)
+    fun createHolder(createHolderDTO: CreateHolderDTO): Holder {
+        return holderService.createHolder(Holder.from(createHolderDTO))
     }
 
     fun findById(id: Long): Optional<Holder> {
@@ -34,12 +35,12 @@ class HolderFacade(
         return holderService.findByExternalKey(externalKey)
     }
 
-    fun validateForUpdate(holderDTO: HolderDTO): String {
-        return holderService.validateForUpdate(holderDTO)
+    fun validateForUpdate(updateHolderDTO: UpdateHolderDTO): String {
+        return holderService.validateForUpdate(updateHolderDTO)
     }
 
-    fun updateHolder(id: Long, holderDTO: HolderDTO): Holder {
-        return holderService.updateHolder(id, holderDTO)
+    fun updateHolder(id: Long, updateHolderDTO: UpdateHolderDTO): Holder {
+        return holderService.updateHolder(id, updateHolderDTO)
     }
 
     fun updateActiveProperty(id: Long, active: Boolean) {

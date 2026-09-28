@@ -1,6 +1,6 @@
 package com.example.bancodigital.model
 
-import com.example.bancodigital.dto.HolderDTO
+import com.example.bancodigital.dto.CreateHolderDTO
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.hibernate.validator.constraints.Length
@@ -29,35 +29,22 @@ data class Holder(
    @Column(unique=true, nullable = false)
    val nationalRegistration: String,
    @JsonFormat(pattern = "dd/MM/yyyy")
-   val birthDate: LocalDate,
-   val active: Boolean = true,
+   var birthDate: LocalDate,
+   var active: Boolean = true,
    @JsonFormat(pattern = "dd/MM/yyyy")
    @Column(nullable = true)
    val dateCreation: LocalDate = LocalDate.now(),
-   val info: String
+   var info: String
 ){
 
    companion object {
 
-      fun updateHolder(id: Long, holderDTO: HolderDTO, savedHolder: Optional<Holder>, info: String) = Holder(
-         id = id,
-         externalKey = savedHolder.get().externalKey,
-         name = holderDTO.name,
-         nationalRegistration = savedHolder.get().nationalRegistration,
-         active = savedHolder.get().active,
-         dateCreation = savedHolder.get().dateCreation,
-         birthDate = holderDTO.birthDate,
-         info = info
-      )
-
-      fun updateActiveProperty(id: Long, holder: Optional<Holder>, active: Boolean) = Holder(
-         id = id,
-         name = holder.get().name,
-         nationalRegistration = holder.get().nationalRegistration,
-         active = active,
-         dateCreation = holder.get().dateCreation,
-         birthDate = holder.get().birthDate,
-         info = holder.get().info
+      fun from(createHolderDTO: CreateHolderDTO) = Holder(
+         id = 0,
+         name = createHolderDTO.name,
+         nationalRegistration = createHolderDTO.nationalRegistration,
+         birthDate = createHolderDTO.birthDate,
+         info = createHolderDTO.info
       )
    }
 }
