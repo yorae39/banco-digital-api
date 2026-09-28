@@ -28,8 +28,9 @@ class HolderController(
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = ["/findAll"], method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
-    override fun findAll(): List<Holder> {
+    override fun findAll(): List<HolderResponse> {
         return holderFacade.findAll()
+            .map { HolderResponse.from(it) }
     }
 
     @RequestMapping(value = ["/save"], method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -43,30 +44,51 @@ class HolderController(
         } else {
             val savedHolder = holderFacade.createHolder(createHolderDTO)
             holderFacade.publishEvent(CreateEvent(this, httpServletResponse, savedHolder.id))
-            ResponseEntity.status(HttpStatus.CREATED).body(savedHolder)
+            ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(HolderResponse.from(savedHolder))
         }
     }
 
     @RequestMapping(value = ["/findById/{id}"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
-    override fun findById(@PathVariable id: Long): ResponseEntity<Optional<Holder>> {
+    override fun findById(
+        @PathVariable id: Long
+    ): ResponseEntity<HolderResponse> {
+
         val holder = holderFacade.findById(id)
-        return if (!holder.isPresent) ResponseEntity.notFound().build() else ResponseEntity.ok(holder)
+
+        return if (holder.isPresent) {
+            ResponseEntity.ok(HolderResponse.from(holder.get()))
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
 
     @RequestMapping(value = ["/findByExternalKey/{externalKey}"],
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE])
-    override fun findByExternalKey(@PathVariable externalKey: String): ResponseEntity<Holder> {
+    override fun findByExternalKey(
+        @PathVariable externalKey: String
+    ): ResponseEntity<HolderResponse> {
+
         val holder = holderFacade.findByExternalKey(externalKey)
-        return if (holder == null) ResponseEntity.notFound().build() else ResponseEntity.ok(holder)
+
+        return if (holder == null) {
+            ResponseEntity.notFound().build()
+        } else {
+            ResponseEntity.ok(HolderResponse.from(holder))
+        }
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = ["/update/{id}"],
+    @RequestMapping(
+        value = ["/update/{id}"],
         method = [RequestMethod.PUT],
-        consumes = [MediaType.APPLICATION_JSON_VALUE])
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
     override fun update(
         @PathVariable id: Long,
         @RequestBody updateHolderDTO: UpdateHolderDTO
@@ -80,9 +102,11 @@ class HolderController(
         }
     }
 
-    @RequestMapping(value = ["/update/{id}/{active}"],
+    @RequestMapping(
+        value = ["/update/{id}/{active}"],
         method = [RequestMethod.PUT],
-        consumes = [MediaType.ALL_VALUE])
+        produces = [MediaType.TEXT_PLAIN_VALUE]
+    )
     override fun updateActiveProperty(
         @PathVariable id: Long,
         @PathVariable active: Boolean,

@@ -21,5 +21,5 @@ data class CreateHolderDTO(
     )
     val birthDate: LocalDate,
 
-    val info: String
+    val info: String?
 )

@@ -34,7 +34,7 @@ data class Holder(
    @JsonFormat(pattern = "dd/MM/yyyy")
    @Column(nullable = true)
    val dateCreation: LocalDate = LocalDate.now(),
-   var info: String
+   var info: String? = null
 ){
 
    companion object {

@@ -1,25 +1,27 @@
 package com.example.bancodigital.model.response
 
 import com.example.bancodigital.model.Holder
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
-class HolderResponse(
+data class HolderResponse(
     val id: Long,
     val externalKey: UUID,
     val name: String,
     val nationalRegistration: String,
-    val birthDate: LocalDate,
-    val active: Boolean,
-    val dateCreation: LocalDate,
-    val info: String
-) {
-    override fun toString(): String {
-        return "HolderResponse(id=$id, externalKey=$externalKey, name=$name, nationalRegistration=$nationalRegistration, birthDate=$birthDate, " +
-                "active=$active, dateCreation=$dateCreation, info=$info)"
-    }
-    companion object {
 
+    @field:JsonFormat(pattern = "dd/MM/yyyy")
+    val birthDate: LocalDate,
+
+    val active: Boolean,
+
+    @field:JsonFormat(pattern = "dd/MM/yyyy")
+    val dateCreation: LocalDate,
+
+    val info: String?
+) {
+    companion object {
         fun from(holder: Holder): HolderResponse =
             HolderResponse(
                 id = holder.id,
