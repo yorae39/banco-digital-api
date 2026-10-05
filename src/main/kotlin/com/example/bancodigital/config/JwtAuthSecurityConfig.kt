@@ -59,6 +59,7 @@ class JwtAuthSecurityConfig(
                 // 1. Libera Swagger E a rota de Autenticação/Login
                 auth.requestMatchers(
                     "/authenticate", // <-- ADICIONADO AQUI (Ajuste a URL do seu login se for diferente)
+                    "/error",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",

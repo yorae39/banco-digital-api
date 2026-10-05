@@ -2,6 +2,8 @@ package com.example.bancodigital.service
 
 import com.example.bancodigital.dto.CreateHolderDTO
 import com.example.bancodigital.dto.UpdateHolderDTO
+import com.example.bancodigital.exception.HolderNotFoundException
+import com.example.bancodigital.exception.InvalidExternalKeyException
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.repository.HolderRepository
 import com.example.bancodigital.util.ValidateBirthDate
@@ -23,12 +25,22 @@ class HolderService(
         return holderRepository.save(holder)
     }
 
-    fun findById(id: Long): Optional<Holder> {
+    fun findById(id: Long): Holder {
         return holderRepository.findById(id)
+            .orElseThrow { HolderNotFoundException(id) }
     }
 
-    fun findByExternalKey(externalKey: String) : Holder? {
-        return holderRepository.findByExternalKey(UUID.fromString(externalKey))
+    fun findByExternalKey(externalKey: String): Holder {
+        val uuid = try {
+            UUID.fromString(externalKey)
+        } catch (ex: IllegalArgumentException) {
+            throw InvalidExternalKeyException(externalKey)
+        }
+
+        return holderRepository.findByExternalKey(uuid)
+            ?: throw HolderNotFoundException(
+                "Holder with externalKey $externalKey not found"
+            )
     }
 
     fun findAll(): List<Holder> {
@@ -58,7 +70,9 @@ class HolderService(
 
     fun updateActiveProperty(id: Long, active: Boolean) {
         val holder = holderRepository.findById(id)
-            .orElseThrow { IllegalArgumentException("Holder with id $id not found") }
+            .orElseThrow {
+                HolderNotFoundException(id)
+            }
 
         holder.active = active
 

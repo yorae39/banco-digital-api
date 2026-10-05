@@ -59,11 +59,9 @@ class HolderController(
 
         val holder = holderFacade.findById(id)
 
-        return if (holder.isPresent) {
-            ResponseEntity.ok(HolderResponse.from(holder.get()))
-        } else {
-            ResponseEntity.notFound().build()
-        }
+        return ResponseEntity.ok(
+            HolderResponse.from(holder)
+        )
     }
 
     @RequestMapping(value = ["/findByExternalKey/{externalKey}"],
@@ -75,11 +73,9 @@ class HolderController(
 
         val holder = holderFacade.findByExternalKey(externalKey)
 
-        return if (holder == null) {
-            ResponseEntity.notFound().build()
-        } else {
-            ResponseEntity.ok(HolderResponse.from(holder))
-        }
+        return ResponseEntity.ok(
+            HolderResponse.from(holder)
+        )
     }
 
     @ResponseStatus(HttpStatus.OK)

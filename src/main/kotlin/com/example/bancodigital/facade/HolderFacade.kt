@@ -27,11 +27,11 @@ class HolderFacade(
         return holderService.createHolder(Holder.from(createHolderDTO))
     }
 
-    fun findById(id: Long): Optional<Holder> {
+    fun findById(id: Long): Holder {
         return holderService.findById(id)
     }
 
-    fun findByExternalKey(externalKey: String): Holder? {
+    fun findByExternalKey(externalKey: String): Holder {
         return holderService.findByExternalKey(externalKey)
     }
 
