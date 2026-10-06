@@ -38,16 +38,16 @@ class HolderController(
         @Valid @RequestBody createHolderDTO: CreateHolderDTO,
         httpServletResponse: HttpServletResponse,
     ): ResponseEntity<Any> {
-        val validate = holderFacade.validateForCreate(createHolderDTO)
-        return if(validate.isNotEmpty()){
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
-        } else {
-            val savedHolder = holderFacade.createHolder(createHolderDTO)
-            holderFacade.publishEvent(CreateEvent(this, httpServletResponse, savedHolder.id))
-            ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(HolderResponse.from(savedHolder))
-        }
+
+        val savedHolder = holderFacade.createHolder(createHolderDTO)
+
+        holderFacade.publishEvent(
+            CreateEvent(this, httpServletResponse, savedHolder.id)
+        )
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(HolderResponse.from(savedHolder))
     }
 
     @RequestMapping(value = ["/findById/{id}"],
@@ -89,13 +89,10 @@ class HolderController(
         @PathVariable id: Long,
         @RequestBody updateHolderDTO: UpdateHolderDTO
     ): ResponseEntity<Any> {
-        val validate = holderFacade.validateForUpdate(updateHolderDTO)
-        return if(validate.isNotEmpty()){
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validate)
-        } else {
-            val savedHolder = holderFacade.updateHolder(id, updateHolderDTO)
-            ResponseEntity.ok(HolderResponse.from(savedHolder))
-        }
+
+        val savedHolder = holderFacade.updateHolder(id, updateHolderDTO)
+
+        return ResponseEntity.ok(HolderResponse.from(savedHolder))
     }
 
     @RequestMapping(

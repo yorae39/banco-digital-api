@@ -83,4 +83,36 @@ class GlobalExceptionHandler {
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(error)
     }
+
+    @ExceptionHandler(BusinessException::class)
+    fun handleBusinessException(
+        ex: BusinessException
+    ): ResponseEntity<ErrorResponse> {
+
+        val error = ErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
+            message = ex.message ?: "Business rule violation"
+        )
+
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(error)
+    }
+
+    @ExceptionHandler(NationalRegistrationAlreadyExistsException::class)
+    fun handleNationalRegistrationAlreadyExists(
+        ex: NationalRegistrationAlreadyExistsException
+    ): ResponseEntity<ErrorResponse> {
+
+        val error = ErrorResponse(
+            status = HttpStatus.CONFLICT.value(),
+            error = HttpStatus.CONFLICT.reasonPhrase,
+            message = ex.message ?: "National registration already exists"
+        )
+
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(error)
+    }
 }

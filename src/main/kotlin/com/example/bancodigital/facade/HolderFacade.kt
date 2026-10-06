@@ -19,12 +19,8 @@ class HolderFacade(
         return holderService.findAll()
     }
 
-    fun validateForCreate(createHolderDTO: CreateHolderDTO): String {
-        return holderService.validateForCreate(createHolderDTO)
-    }
-
     fun createHolder(createHolderDTO: CreateHolderDTO): Holder {
-        return holderService.createHolder(Holder.from(createHolderDTO))
+        return holderService.createHolder(createHolderDTO)
     }
 
     fun findById(id: Long): Holder {
@@ -33,10 +29,6 @@ class HolderFacade(
 
     fun findByExternalKey(externalKey: String): Holder {
         return holderService.findByExternalKey(externalKey)
-    }
-
-    fun validateForUpdate(updateHolderDTO: UpdateHolderDTO): String {
-        return holderService.validateForUpdate(updateHolderDTO)
     }
 
     fun updateHolder(id: Long, updateHolderDTO: UpdateHolderDTO): Holder {

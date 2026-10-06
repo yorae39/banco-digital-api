@@ -4,6 +4,9 @@ import com.example.bancodigital.dto.CreateHolderDTO
 import com.example.bancodigital.dto.UpdateHolderDTO
 import com.example.bancodigital.exception.HolderNotFoundException
 import com.example.bancodigital.exception.InvalidExternalKeyException
+import com.example.bancodigital.exception.InvalidNationalRegistrationException
+import com.example.bancodigital.exception.NationalRegistrationAlreadyExistsException
+import com.example.bancodigital.exception.UnderageHolderException
 import com.example.bancodigital.model.Holder
 import com.example.bancodigital.repository.HolderRepository
 import com.example.bancodigital.util.ValidateBirthDate
@@ -21,7 +24,11 @@ class HolderService(
     val validateBirthDate: ValidateBirthDate
 ) {
 
-    fun createHolder(holder: Holder): Holder {
+    fun createHolder(createHolderDTO: CreateHolderDTO): Holder {
+        validateForCreate(createHolderDTO)
+
+        val holder = Holder.from(createHolderDTO)
+
         return holderRepository.save(holder)
     }
 
@@ -54,9 +61,15 @@ class HolderService(
         //holderRepository.deleteById(id)
     }
 
-    fun updateHolder(id: Long, holderDTO: UpdateHolderDTO): Holder {
+    fun updateHolder(
+        id: Long,
+        holderDTO: UpdateHolderDTO
+    ): Holder {
+
         val holder = holderRepository.findById(id)
-            .orElseThrow { IllegalArgumentException("Holder with id $id not found") }
+            .orElseThrow { HolderNotFoundException(id) }
+
+        validateForUpdate(holderDTO)
 
         val date = LocalDate.now()
             .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
@@ -84,23 +97,40 @@ class HolderService(
         return holder != null
     }
 
-    fun validateForUpdate(holder: UpdateHolderDTO): String {
-        return if (holder.birthDate.let { validateBirthDate.calculateAge(it, LocalDate.now()) } < 18) {
-            "The holder is under eighteen years of age"
-        } else {
-            ""
+    private fun validateForUpdate(holderDTO: UpdateHolderDTO) {
+        if (
+            validateBirthDate.calculateAge(
+                holderDTO.birthDate,
+                LocalDate.now()
+            ) < 18
+        ) {
+            throw UnderageHolderException()
         }
     }
 
-    fun validateForCreate(createHolderDTO: CreateHolderDTO): String {
-        return if (!validateNationalRegistration.isNationalRegistration(createHolderDTO.nationalRegistration)) {
-            "Holder national registration [ ${createHolderDTO.nationalRegistration} ] is invalid"
-        } else if (validateBirthDate.calculateAge(createHolderDTO.birthDate, LocalDate.now()) < 18) {
-            "The holder is under eighteen years of age"
-        } else if (checkNationalRegistration(createHolderDTO.nationalRegistration)) {
-            "There is already a registered holder with this national registration"
-        } else {
-            ""
+    private fun validateForCreate(createHolderDTO: CreateHolderDTO) {
+        if (!validateNationalRegistration.isNationalRegistration(
+                createHolderDTO.nationalRegistration
+            )
+        ) {
+            throw InvalidNationalRegistrationException(
+                createHolderDTO.nationalRegistration
+            )
+        }
+
+        if (
+            validateBirthDate.calculateAge(
+                createHolderDTO.birthDate,
+                LocalDate.now()
+            ) < 18
+        ) {
+            throw UnderageHolderException()
+        }
+
+        if (checkNationalRegistration(createHolderDTO.nationalRegistration)) {
+            throw NationalRegistrationAlreadyExistsException(
+                createHolderDTO.nationalRegistration
+            )
         }
     }
 }
