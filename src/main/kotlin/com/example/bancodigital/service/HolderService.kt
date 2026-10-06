@@ -2,6 +2,7 @@ package com.example.bancodigital.service
 
 import com.example.bancodigital.dto.CreateHolderDTO
 import com.example.bancodigital.dto.UpdateHolderDTO
+import com.example.bancodigital.event.HolderUpdatedEvent
 import com.example.bancodigital.exception.HolderNotFoundException
 import com.example.bancodigital.exception.InvalidExternalKeyException
 import com.example.bancodigital.exception.InvalidNationalRegistrationException
@@ -11,7 +12,9 @@ import com.example.bancodigital.model.Holder
 import com.example.bancodigital.repository.HolderRepository
 import com.example.bancodigital.util.ValidateBirthDate
 import com.example.bancodigital.util.ValidateNationalRegistration
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -21,7 +24,8 @@ import java.util.*
 class HolderService(
     val holderRepository: HolderRepository,
     val validateNationalRegistration: ValidateNationalRegistration,
-    val validateBirthDate: ValidateBirthDate
+    val validateBirthDate: ValidateBirthDate,
+    private val publisher: ApplicationEventPublisher
 ) {
 
     fun createHolder(createHolderDTO: CreateHolderDTO): Holder {
@@ -61,6 +65,7 @@ class HolderService(
         //holderRepository.deleteById(id)
     }
 
+    @Transactional
     fun updateHolder(
         id: Long,
         holderDTO: UpdateHolderDTO
@@ -78,7 +83,16 @@ class HolderService(
         holder.birthDate = holderDTO.birthDate
         holder.info = "Holder updated on this date : $date"
 
-        return holderRepository.save(holder)
+        val savedHolder = holderRepository.save(holder)
+
+        publisher.publishEvent(
+            HolderUpdatedEvent(
+                holderId = savedHolder.id,
+                externalKey = savedHolder.externalKey
+            )
+        )
+
+        return savedHolder
     }
 
     fun updateActiveProperty(id: Long, active: Boolean) {
