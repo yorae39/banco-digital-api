@@ -48,8 +48,7 @@ interface HolderApi {
         ]
     )
     fun createHolder(
-        createHolderDTO: CreateHolderDTO,
-        httpServletResponse: HttpServletResponse
+        createHolderDTO: CreateHolderDTO
     ): ResponseEntity<Any>
 
     @Operation(

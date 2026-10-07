@@ -2,6 +2,7 @@ package com.example.bancodigital.service
 
 import com.example.bancodigital.dto.CreateHolderDTO
 import com.example.bancodigital.dto.UpdateHolderDTO
+import com.example.bancodigital.event.HolderCreatedEvent
 import com.example.bancodigital.event.HolderUpdatedEvent
 import com.example.bancodigital.exception.HolderNotFoundException
 import com.example.bancodigital.exception.InvalidExternalKeyException
@@ -28,12 +29,22 @@ class HolderService(
     private val publisher: ApplicationEventPublisher
 ) {
 
+    @Transactional
     fun createHolder(createHolderDTO: CreateHolderDTO): Holder {
         validateForCreate(createHolderDTO)
 
         val holder = Holder.from(createHolderDTO)
 
-        return holderRepository.save(holder)
+        val savedHolder = holderRepository.save(holder)
+
+        publisher.publishEvent(
+            HolderCreatedEvent(
+                holderId = savedHolder.id,
+                externalKey = savedHolder.externalKey
+            )
+        )
+
+        return savedHolder
     }
 
     fun findById(id: Long): Holder {

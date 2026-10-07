@@ -2,9 +2,7 @@ package com.example.bancodigital.controller
 
 import com.example.bancodigital.dto.CreateHolderDTO
 import com.example.bancodigital.dto.UpdateHolderDTO
-import com.example.bancodigital.event.CreateEvent
 import com.example.bancodigital.facade.HolderFacade
-import com.example.bancodigital.model.Holder
 import com.example.bancodigital.model.response.HolderResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -15,9 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
-import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 @RestController
 @RequestMapping("/holders")
@@ -36,17 +33,18 @@ class HolderController(
     @RequestMapping(value = ["/save"], method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun createHolder(
         @Valid @RequestBody createHolderDTO: CreateHolderDTO,
-        httpServletResponse: HttpServletResponse,
     ): ResponseEntity<Any> {
 
         val savedHolder = holderFacade.createHolder(createHolderDTO)
 
-        holderFacade.publishEvent(
-            CreateEvent(this, httpServletResponse, savedHolder.id)
-        )
+        val location = ServletUriComponentsBuilder
+            .fromCurrentContextPath()
+            .path("/holders/findById/{id}")
+            .buildAndExpand(savedHolder.id)
+            .toUri()
 
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .created(location)
             .body(HolderResponse.from(savedHolder))
     }
 
